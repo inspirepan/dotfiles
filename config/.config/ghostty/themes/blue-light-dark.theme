@@ -1,0 +1,29 @@
+# Blue Light Dark Theme for Ghostty
+# Based on the Blue Light Cursor Dark VS Code theme
+
+background = #191C23
+foreground = #e8e8e8
+cursor-color = #e8e8e8
+cursor-text = #101016
+selection-background = #404048
+selection-foreground = #e8e8e8
+
+# Normal colors (0-7)
+palette = 0=#3a3a3a
+palette = 1=#e85070
+palette = 2=#5dc878
+palette = 3=#f5d580
+palette = 4=#70b8e8
+palette = 5=#d0a0d0
+palette = 6=#60d0d8
+palette = 7=#e0e5f0
+
+# Bright colors (8-15)
+palette = 8=#909090
+palette = 9=#ff6080
+palette = 10=#70e090
+palette = 11=#ffe090
+palette = 12=#88c8f0
+palette = 13=#e0b0e8
+palette = 14=#78e0e8
+palette = 15=#f0f0f0

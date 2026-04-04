@@ -10,7 +10,6 @@
 - [ ] [manual] 登录 Apple 账户
 - [ ] [manual] 安装 WeChat 并登录
 - [ ] [manual] 安装微信输入法（从微信官网获取）
-- [ ] [manual] 安装 Feishu（Lark）并登录
 - [ ] [manual] 安装 Clash Verge，导入订阅并配置代理
 - [ ] [manual] 安装 Chrome，登录并同步扩展 / 书签
 
@@ -71,6 +70,8 @@ stow zsh git config ssh
 - `~/.gitconfig` -> `dotfiles/git/.gitconfig`
 - `~/.gitconfig-github` -> `dotfiles/git/.gitconfig-github`
 - `~/.config/ghostty/config` -> `dotfiles/config/.config/ghostty/config`
+- `~/.config/ghostty/themes/blue-light.theme` -> `dotfiles/config/.config/ghostty/themes/blue-light.theme`
+- `~/.config/ghostty/themes/blue-light-dark.theme` -> `dotfiles/config/.config/ghostty/themes/blue-light-dark.theme`
 - `~/.config/ripgrep/config` -> `dotfiles/config/.config/ripgrep/config`
 - `~/.config/jj/config.toml` -> `dotfiles/config/.config/jj/config.toml`
 - `~/.config/jjui/config.toml` -> `dotfiles/config/.config/jjui/config.toml`
@@ -88,9 +89,6 @@ stow zsh git config ssh
 # uv（Python）
 curl -LsSf https://astral.sh/uv/install.sh | sh
 uv python install 3.14 --default
-uv tool install ruff
-uv tool install pyright
-uv tool install ty
 
 # bun（JavaScript）
 curl -fsSL https://bun.com/install | bash
@@ -99,35 +97,47 @@ curl -fsSL https://bun.com/install | bash
 mkdir -p ~/.local
 curl -sL https://raw.githubusercontent.com/tobi/try/refs/heads/main/try.rb > ~/.local/try.rb
 chmod +x ~/.local/try.rb
+```
 
-# klaude
+### uv 全局工具
+
+```bash
+uv tool install ruff
+uv tool install pyright
+uv tool install ty
+uv tool install llm
 uv tool install klaude-code
 ```
 
-## 第七阶段：Ghostty 主题
+### npm 全局包
 
 ```bash
-gclone https://github.com/inspirepan/vscode-blue-light-theme.git
+npm i -g @anthropic-ai/claude-code
+npm i -g @mariozechner/claude-trace
+npm i -g @mariozechner/pi-coding-agent
+npm i -g wrangler
+npm i -g pptxgenjs
 ```
 
-如果有需要，再更新 ghostty 配置中的主题路径。主题文件应当被符号链接或复制到 `~/.config/ghostty/themes/`：
+## 第七阶段：主题
+
+Ghostty 主题已通过 stow 管理（`config/.config/ghostty/themes/`），第五阶段的 `stow config` 会自动创建符号链接。
+
+VSCode 主题从 dotfiles 安装：
 
 ```bash
-mkdir -p ~/.config/ghostty/themes
-ln -sf ~/code/GITHUB/inspirepan-vscode-blue-light-theme/ghostty/blue-light.theme ~/.config/ghostty/themes/
-ln -sf ~/code/GITHUB/inspirepan-vscode-blue-light-theme/ghostty/blue-light-dark.theme ~/.config/ghostty/themes/
+code --install-extension ~/code/dotfiles/themes/vscode-blue-light/blue-light-0.6.4.vsix
 ```
 
-## 第八阶段：VSCode 主题
+主题源文件维护在 `themes/vscode-blue-light/`，如需重新打包：
 
 ```bash
-cd ~/code/GITHUB/inspirepan-vscode-blue-light-theme
+cd ~/code/dotfiles/themes/vscode-blue-light
 npm i -g vsce
 vsce package
-code --install-extension ./blue-light-*.vsix
 ```
 
-## 第九阶段：密钥
+## 第八阶段：密钥
 
 创建 `~/.zshenv.secret`，写入 API key 和 token。这个文件会被 `.zshrc`
 加载，但不会被 dotfiles 跟踪。
@@ -139,18 +149,13 @@ export ANTHROPIC_API_KEY="..."
 # ... 其他密钥
 ```
 
-## 第十阶段：手动安装（不在 brew 中）
+## 第九阶段：手动安装（不在 brew 中）
 
-- [ ] [manual] Claude.app -- 从 claude.ai 下载
-- [ ] [manual] ChatGPT.app -- 从 openai.com 或 Mac App Store 下载
-- [ ] [manual] Codex CLI -- `npm i -g @openai/codex`
-- [ ] [manual] MoneyTrack -- Mac App Store
 - [ ] 字体：`cp ~/code/dotfiles/fonts/* ~/Library/Fonts/`（见 [fonts.md](fonts.md)）
 
-## 第十一阶段：应用登录与同步
+## 第十阶段：应用登录与同步
 
 - [ ] [manual] Notion：登录并同步 workspace
-- [ ] [manual] Telegram：登录并同步聊天记录
 - [ ] [manual] Spotify：登录
 - [ ] [manual] Tailscale：登录并授权网络扩展
 - [ ] [manual] VSCode：用 GitHub 登录并同步设置 / 扩展
@@ -158,7 +163,7 @@ export ANTHROPIC_API_KEY="..."
 - [ ] [manual] BetterDisplay：配置显示参数
 - [ ] [manual] Itsycal：配置日期格式
 
-## 第十二阶段：macOS 偏好设置
+## 第十一阶段：macOS 偏好设置
 
 运行 defaults 脚本：
 
@@ -176,7 +181,7 @@ export ANTHROPIC_API_KEY="..."
 剩余需要手动完成：
 - [ ] Karabiner-Elements：配置已通过 stow 链接，确认按键映射已正确加载
 
-## 第十三阶段：可选 / 按需安装
+## 第十二阶段：可选 / 按需安装
 
 - [ ] Cloudflare Wrangler：`npm i -g wrangler`
 - [ ] OrbStack

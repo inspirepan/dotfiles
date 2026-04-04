@@ -1,6 +1,4 @@
-# 主题
-# 注意：先克隆 vscode-blue-light-theme，再更新下面的路径
-# git clone git@github.com:inspirepan/vscode-blue-light-theme.git ~/code/GITHUB/inspirepan-vscode-blue-light-theme
+# 主题（由 stow 管理，主题文件在 config/.config/ghostty/themes/）
 theme = light:blue-light,dark:blue-light-dark
 
 # 字体
