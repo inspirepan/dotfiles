@@ -14,6 +14,7 @@ alias jjnm="jj git fetch && jj new main@origin"
 # quick edit
 alias zshrc="$EDITOR ~/.zshrc"
 alias aliases="$EDITOR ~/.zsh_aliases"
+alias cwd="pwd | tr -d '\n' | pbcopy"
 
 # port: check what's using a port
 port() { [[ -z "$1" ]] && { echo "Usage: port <number>"; return 1 }; lsof -i :"$1"; }
