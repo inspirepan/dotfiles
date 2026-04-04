@@ -10,6 +10,21 @@
 	helper = 
 	helper = !/opt/homebrew/bin/gh auth git-credential
 
+[merge]
+	conflictStyle = zdiff3
+
+[pull]
+	rebase = true
+
+[rebase]
+	autoStash = true
+
+[fetch]
+	prune = true
+
+[rerere]
+	enabled = true
+
 [core]
 	pager = delta
 

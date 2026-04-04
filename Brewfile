@@ -27,6 +27,7 @@ brew "jq"
 brew "zoxide"                # 智能 cd
 brew "trash"                 # 安全删除
 brew "git-delta"             # 更好的 diff
+brew "glow"                  # 终端 Markdown 渲染
 
 # --- 语言与运行时 ---
 brew "go"
