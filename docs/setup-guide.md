@@ -153,7 +153,15 @@ npm i -g vsce
 vsce package
 ```
 
-## Phase 6：密钥
+## Phase 6：Agent Skills
+
+```bash
+~/code/dotfiles/scripts/setup-skills.sh
+```
+
+这会从 `Skillfile` 安装远程 skill，并从 dotfiles 链接本地 skill（如 commit）到 `~/.agents/skills/`。
+
+## Phase 7：密钥（补充）
 
 在 `~/.zshenv.secret` 中补充其余 API key（ANTHROPIC_API_KEY 已在 Phase 0 设置）：
 
@@ -162,7 +170,7 @@ export OPENAI_API_KEY="..."
 # ... 其他密钥
 ```
 
-## Phase 7：应用登录与同步
+## Phase 8：应用登录与同步
 
 - [ ] [manual] Notion：登录并同步 workspace
 - [ ] [manual] Spotify：登录
@@ -172,7 +180,7 @@ export OPENAI_API_KEY="..."
 - [ ] [manual] BetterDisplay：配置显示参数
 - [ ] [manual] Itsycal：配置日期格式
 
-## Phase 8：macOS 偏好设置
+## Phase 9：macOS 偏好设置
 
 运行 defaults 脚本：
 
@@ -190,7 +198,7 @@ export OPENAI_API_KEY="..."
 剩余需要手动完成：
 - [ ] Karabiner-Elements：配置已通过 stow 链接，确认按键映射已正确加载
 
-## Phase 9：可选 / 按需安装
+## Phase 10：可选 / 按需安装
 
 - [ ] Cloudflare Wrangler：`npm i -g wrangler`
 - [ ] OrbStack
