@@ -14,8 +14,9 @@ _jj_theme_vcs_info() {
   # 优先尝试 jj
   if jj root &>/dev/null; then
     local change_id desc ins del stat_line change_count trunk_bookmark
-    change_id=$(jj log -r @ --no-graph -T 'change_id.shortest(8)' 2>/dev/null)
+    change_id=$(jj log -r @ --no-graph -T 'change_id.shortest()' 2>/dev/null)
     desc=$(jj log -r @ --no-graph -T 'description.first_line()' 2>/dev/null)
+    local flags=$(jj log -r @ --no-graph -T 'if(conflict, "conflict") ++ " " ++ if(empty, "empty")' 2>/dev/null)
     change_count=$(jj log -r 'trunk()..@' --no-graph -T '"x\n"' 2>/dev/null | wc -l | tr -d ' ')
     local_bookmark=$(jj log -r '@' --no-graph -T 'bookmarks.join(" ")' 2>/dev/null)
     [[ -z "$local_bookmark" ]] && local_bookmark=$(jj log -r '@-' --no-graph -T 'bookmarks.join(" ")' 2>/dev/null)
@@ -27,12 +28,17 @@ _jj_theme_vcs_info() {
     local stat="" desc_part=""
     [[ -n "$files" && "$files" -gt 0 ]] && stat=" %F{yellow}*${files}%f %F{green}+${ins:-0}%f %F{red}-${del:-0}%f"
     if [[ -n "$desc" ]]; then
+      [[ ${#desc} -gt 40 ]] && desc="${desc:0:40}…"
       desc_part=" %F{8}${desc}%f"
     else
       desc_part=" %F{8}(无描述)%f"
     fi
 
-    echo " %F{magenta}jj:${change_id}%f%F{yellow}(${change_count})%f %F{cyan}${local_bookmark}%f${desc_part}${stat}${git_user}"
+    local count_part="" flag_part=""
+    [[ -n "$change_count" && "$change_count" -gt 1 ]] && count_part="%F{yellow}(${change_count})%f"
+    [[ "$flags" == *conflict* ]] && flag_part+=" %F{red}CONFLICT%f"
+    [[ "$flags" == *empty* ]] && flag_part+=" %F{green}EMPTY%f"
+    echo " %F{magenta}jj:${change_id}%f${count_part} %F{cyan}${local_bookmark}%f${desc_part}${stat}${flag_part}${git_user}"
     return
   fi
 
@@ -49,13 +55,52 @@ _jj_theme_vcs_info() {
     local stat=""
     [[ -n "$files" && "$files" -gt 0 ]] && stat=" %F{yellow}*${files}%f %F{green}+${ins:-0}%f %F{red}-${del:-0}%f"
 
-    echo " %F{cyan}git:${branch}%f${stat}${git_user}"
+    # ahead/behind
+    local ab_part=""
+    local ab=$(git rev-list --left-right --count HEAD...@{upstream} 2>/dev/null)
+    if [[ -n "$ab" ]]; then
+      local ahead=$(echo "$ab" | cut -f1) behind=$(echo "$ab" | cut -f2)
+      [[ "$ahead" -gt 0 ]] && ab_part+=" %F{green}↑${ahead}%f"
+      [[ "$behind" -gt 0 ]] && ab_part+=" %F{red}↓${behind}%f"
+    fi
+
+    # staged
+    local staged_part=""
+    local staged_count=$(git diff --cached --numstat 2>/dev/null | wc -l | tr -d ' ')
+    [[ "$staged_count" -gt 0 ]] && staged_part=" %F{green}●${staged_count}%f"
+
+    # stash
+    local stash_part=""
+    local stash_count=$(git stash list 2>/dev/null | wc -l | tr -d ' ')
+    [[ "$stash_count" -gt 0 ]] && stash_part=" %F{yellow}⚑${stash_count}%f"
+
+    echo " %F{cyan}git:${branch}%f${ab_part}${staged_part}${stat}${stash_part}${git_user}"
     return
   fi
 }
 
+_jj_theme_agent_info() {
+  local parts=()
+  [[ -f CLAUDE.md ]] && parts+=("CLAUDE.md")
+  [[ -f AGENTS.md ]] && parts+=("AGENTS.md")
+  local skill_count=0
+  [[ -d .agents/skills ]] && (( skill_count += $(find .agents/skills -maxdepth 1 -mindepth 1 -type d 2>/dev/null | wc -l) ))
+  [[ -d .claude/skills ]] && (( skill_count += $(find .claude/skills -maxdepth 1 -mindepth 1 -type d 2>/dev/null | wc -l) ))
+  [[ "$skill_count" -gt 0 ]] && parts+=("${skill_count} skills")
+  [[ ${#parts[@]} -gt 0 ]] && echo " %F{8}(${(j:, :)parts})%f"
+}
+
+# Cache VCS info in precmd so Ctrl-C won't break the prompt
+_jj_theme_cached_vcs=""
+_jj_theme_cached_agent=""
+_jj_theme_precmd() {
+  _jj_theme_cached_vcs="$(_jj_theme_vcs_info)"
+  _jj_theme_cached_agent="$(_jj_theme_agent_info)"
+}
+precmd_functions+=(_jj_theme_precmd)
+
 setopt PROMPT_SUBST
 
 PROMPT='
-%F{blue}%~%f$(_jj_theme_vcs_info)
+%F{blue}%~%f${_jj_theme_cached_vcs}${_jj_theme_cached_agent}
 %F{magenta}➜%f '

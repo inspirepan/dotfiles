@@ -32,7 +32,7 @@ fi
 echo ">>> globalias 已内置于 oh-my-zsh，只需在 plugins=() 中启用"
 
 DOTFILES="$(cd "$(dirname "$0")/.." && pwd)"
-echo ">>> 正在从 dotfiles 安装 jj.zsh-theme"
-cp "$DOTFILES/omz-custom/themes/jj.zsh-theme" "$ZSH_CUSTOM/themes/jj.zsh-theme"
+echo ">>> 正在从 dotfiles 链接 jj.zsh-theme"
+ln -sf "$DOTFILES/omz-custom/themes/jj.zsh-theme" "$ZSH_CUSTOM/themes/jj.zsh-theme"
 
 echo ">>> 完成。请重启 shell，或执行：source ~/.zshrc"
