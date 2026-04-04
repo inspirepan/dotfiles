@@ -2,48 +2,66 @@
 
 用于初始化一台全新 macOS 机器的有序清单。
 
-标记为 `[stow]` 的项目由本仓库中的配置文件管理。
-标记为 `[manual]` 的项目需要手动操作。
+Phase 0 需要手动完成（bootstrap agent）。从 Phase 1 开始，在 dotfiles 目录启动
+`klaude`，让 agent 按本指南执行剩余步骤。标记为 `[manual]` 的项目需要人工介入。
 
-## 第一阶段：基础项
+## Phase 0：手动 Bootstrap
 
-- [ ] [manual] 登录 Apple 账户
-- [ ] [manual] 安装 WeChat 并登录
-- [ ] [manual] 安装微信输入法（从微信官网获取）
-- [ ] [manual] 安装 Clash Verge，导入订阅并配置代理
-- [ ] [manual] 安装 Chrome，登录并同步扩展 / 书签
+在新机器上打开终端，按顺序执行：
 
-## 第二阶段：Homebrew
+1. 登录 Apple 账户
+2. 安装 WeChat 并登录
+3. 安装微信输入法（从微信官网获取）
+4. 安装 Clash Verge，导入订阅并配置代理
+5. 安装 Chrome，登录并同步扩展 / 书签
+6. 安装 Homebrew：
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
 echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
 eval "$(/opt/homebrew/bin/brew shellenv)"
-
 brew completions link
 ```
 
-通过 Brewfile 安装全部内容：
+7. 登录 GitHub 并克隆 dotfiles：
+
+```bash
+brew install gh
+gh auth login
+mkdir -p ~/code
+git clone git@github.com:inspirepan/dotfiles.git ~/code/dotfiles
+```
+
+8. 安装 uv 和 klaude：
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+uv tool install klaude-code
+```
+
+9. 创建 `~/.zshenv.secret`，写入 API key：
+
+```bash
+export ANTHROPIC_API_KEY="..."
+```
+
+10. 启动 agent：
+
+```bash
+cd ~/code/dotfiles && klaude
+```
+
+> 从此处开始，告诉 klaude "按 docs/setup-guide.md 从 Phase 1 开始执行"。
+
+---
+
+## Phase 1：Homebrew 全量安装
 
 ```bash
 brew bundle --file=~/code/dotfiles/Brewfile
 ```
 
-## 第三阶段：GitHub
-
-```bash
-gh auth login
-```
-
-克隆当前 dotfiles 仓库：
-
-```bash
-mkdir -p ~/code
-git clone git@github.com:inspirepan/dotfiles.git ~/code/dotfiles
-```
-
-## 第四阶段：Oh-my-zsh + 插件
+## Phase 2：Oh-my-zsh + 插件
 
 运行初始化脚本：
 
@@ -57,11 +75,10 @@ git clone git@github.com:inspirepan/dotfiles.git ~/code/dotfiles
 - zsh-syntax-highlighting
 - jj.zsh-theme（带 jj/git 支持的自定义提示符）
 
-## 第五阶段：Stow 配置文件
+## Phase 3：Stow 配置文件
 
 ```bash
 cd ~/code/dotfiles
-brew install stow
 stow zsh git config ssh
 ```
 
@@ -83,11 +100,10 @@ stow zsh git config ssh
 **注意**：Karabiner-Elements 第一次启动时可能不接受符号链接配置。
 如果它覆盖了符号链接，就先改为直接复制文件，之后再重新 `stow`。
 
-## 第六阶段：额外开发工具
+## Phase 4：开发工具
 
 ```bash
-# uv（Python）
-curl -LsSf https://astral.sh/uv/install.sh | sh
+# Python
 uv python install 3.14 --default
 
 # bun（JavaScript）
@@ -106,7 +122,6 @@ uv tool install ruff
 uv tool install pyright
 uv tool install ty
 uv tool install llm
-uv tool install klaude-code
 ```
 
 ### npm 全局包
@@ -119,7 +134,7 @@ npm i -g wrangler
 npm i -g pptxgenjs
 ```
 
-## 第七阶段：主题
+## Phase 5：主题
 
 Ghostty 主题已通过 stow 管理（`config/.config/ghostty/themes/`），第五阶段的 `stow config` 会自动创建符号链接。
 
@@ -137,23 +152,16 @@ npm i -g vsce
 vsce package
 ```
 
-## 第八阶段：密钥
+## Phase 6：密钥
 
-创建 `~/.zshenv.secret`，写入 API key 和 token。这个文件会被 `.zshrc`
-加载，但不会被 dotfiles 跟踪。
+在 `~/.zshenv.secret` 中补充其余 API key（ANTHROPIC_API_KEY 已在 Phase 0 设置）：
 
 ```bash
-# 模板：
 export OPENAI_API_KEY="..."
-export ANTHROPIC_API_KEY="..."
 # ... 其他密钥
 ```
 
-## 第九阶段：手动安装（不在 brew 中）
-
-- [ ] 字体：`cp ~/code/dotfiles/fonts/* ~/Library/Fonts/`（见 [fonts.md](fonts.md)）
-
-## 第十阶段：应用登录与同步
+## Phase 7：应用登录与同步
 
 - [ ] [manual] Notion：登录并同步 workspace
 - [ ] [manual] Spotify：登录
@@ -163,7 +171,7 @@ export ANTHROPIC_API_KEY="..."
 - [ ] [manual] BetterDisplay：配置显示参数
 - [ ] [manual] Itsycal：配置日期格式
 
-## 第十一阶段：macOS 偏好设置
+## Phase 8：macOS 偏好设置
 
 运行 defaults 脚本：
 
@@ -181,7 +189,7 @@ export ANTHROPIC_API_KEY="..."
 剩余需要手动完成：
 - [ ] Karabiner-Elements：配置已通过 stow 链接，确认按键映射已正确加载
 
-## 第十二阶段：可选 / 按需安装
+## Phase 9：可选 / 按需安装
 
 - [ ] Cloudflare Wrangler：`npm i -g wrangler`
 - [ ] OrbStack
