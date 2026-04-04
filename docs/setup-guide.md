@@ -84,6 +84,7 @@ stow zsh git config ssh
 
 这会创建以下符号链接：
 - `~/.zshrc` -> `dotfiles/zsh/.zshrc`
+- `~/.zsh_aliases` -> `dotfiles/zsh/.zsh_aliases`
 - `~/.gitconfig` -> `dotfiles/git/.gitconfig`
 - `~/.gitconfig-github` -> `dotfiles/git/.gitconfig-github`
 - `~/.config/ghostty/config` -> `dotfiles/config/.config/ghostty/config`

@@ -1,0 +1,62 @@
+# 命令别名
+alias ll="eza -l --group-directories-first --hyperlink --no-user"
+alias la="eza -la --group-directories-first --hyperlink --no-user"
+alias tree="tree --gitignore"
+alias lg="lazygit"
+alias kl="klaude"
+alias jja="jjui -r 'all()'"
+alias jjb="jj bookmark list --all"
+alias jjd="jj diff"
+alias jjl="jj log"
+alias jjs="jj status"
+alias jjnm="jj git fetch && jj new main@origin"
+
+# quick edit
+alias zshrc="$EDITOR ~/.zshrc"
+alias aliases="$EDITOR ~/.zsh_aliases"
+
+# port: check what's using a port
+port() { [[ -z "$1" ]] && { echo "Usage: port <number>"; return 1 }; lsof -i :"$1"; }
+pid() { [[ -z "$1" ]] && { echo "Usage: pid <name>"; return 1 }; ps aux | head -1; ps aux | rg -i "$1"; }
+ram() { local total=$(sysctl -n hw.memsize); ps aux -m | awk -v total="$total" 'NR<=1{next} {cmd=$11; for(i=12;i<=NF;i++) cmd=cmd" "$i; name=cmd; if(match(cmd,/\/([^\/]+)\.app\//)){name=substr(cmd,RSTART+1,RLENGTH-6)} else {split(cmd,a,"/"); name=a[length(a)]; sub(/ .*/,"",name)} mem[name]+=$4} END{for(n in mem){mb=mem[n]/100*total/1048576; if(mb>=1024) printf "%09.1f %5.1fG  %s\n", mb, mb/1024, n; else printf "%09.1f %5.0fM  %s\n", mb, mb, n}}' | sort -rn | cut -d' ' -f2- | head -${1:-20}; }
+
+# mkdir + cd
+unalias md 2>/dev/null
+md() { mkdir -p "$1" && cd "$1"; }
+
+# gclone: clone GitHub repo to ~/code/GITHUB/org-repo
+gclone() {
+  local url="$1"
+  local cwd="$PWD"
+
+  if [[ -z "$url" ]]; then
+    echo "Usage: gclone <git-url>"
+    return 1
+  fi
+
+  if [[ "$url" =~ github\.com[:/]+([^/]+)/([^/.]+)(\.git)?$ ]]; then
+    local org="${match[1]}"
+    local repo="${match[2]}"
+    local dir="${org}-${repo}"
+
+    mkdir -p "$HOME/code/GITHUB" || return 1
+
+    if git -C "$HOME/code/GITHUB" clone "$url" "$dir"; then
+      cd "$HOME/code/GITHUB/$dir" || cd "$cwd"
+    else
+      cd "$cwd"
+      return 1
+    fi
+  else
+    if git clone "$url"; then
+      local repo_name
+      repo_name="${url##*/}"
+      repo_name="${repo_name%.git}"
+      if [[ -d "$repo_name" ]]; then
+        cd "$repo_name" || cd "$cwd"
+      fi
+    else
+      return 1
+    fi
+  fi
+}

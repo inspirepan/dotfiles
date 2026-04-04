@@ -2,8 +2,6 @@
 	name = inspirepan
 	email = narfnas@163.com
 
-[includeIf "gitdir:~/code/GITHUB/"]
-	path = ~/.gitconfig-github
 
 [credential "https://github.com"]
 	helper = 

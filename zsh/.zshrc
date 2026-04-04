@@ -3,6 +3,11 @@ setopt AUTO_CD
 setopt CORRECT
 setopt INTERACTIVE_COMMENTS
 setopt NO_BEEP
+setopt SHARE_HISTORY
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_REDUCE_BLANKS
+HISTSIZE=50000
+SAVEHIST=50000
 
 # OMZ
 export ZSH="$HOME/.oh-my-zsh"
@@ -21,64 +26,28 @@ typeset -U path
 export GOPATH="$HOME/go"
 path=(
   $HOME/.local/bin
+  $HOME/.cargo/bin
   $HOME/.bun/bin
   $GOPATH/bin
   $path
 )
 
+bindkey '^[[Z' autosuggest-accept
+
 # ZOXIDE
 eval "$(zoxide init zsh)"
+
+# EDITOR
+export EDITOR="code --wait"
 
 # BAT
 export BAT_THEME=ansi
 
-# 别名
-alias ll="eza -l --group-directories-first --hyperlink --no-user"
-alias la="eza -la --group-directories-first --hyperlink --no-user"
-alias tree="tree --gitignore"
-alias lg="lazygit"
-alias kl="klaude"
+# 别名和函数
+source ~/.zsh_aliases
 
 # 密钥（token、API key，不会被 dotfiles 跟踪）
 [[ -f ~/.zshenv.secret ]] && source ~/.zshenv.secret
-
-# gclone：把 GitHub 仓库克隆到 ~/code/GITHUB 下的 org-repo 目录
-gclone() {
-  local url="$1"
-  local cwd="$PWD"
-
-  if [[ -z "$url" ]]; then
-    echo "用法：gclone <git-url>"
-    return 1
-  fi
-
-  # 从常见的 GitHub URL 格式中提取 org 和 repo
-  if [[ "$url" =~ github\.com[:/]+([^/]+)/([^/.]+)(\.git)?$ ]]; then
-    local org="${match[1]}"
-    local repo="${match[2]}"
-    local dir="${org}-${repo}"
-
-    mkdir -p "$HOME/code/GITHUB" || return 1
-
-    if git -C "$HOME/code/GITHUB" clone "$url" "$dir"; then
-      cd "$HOME/code/GITHUB/$dir" || cd "$cwd"
-    else
-      cd "$cwd"
-      return 1
-    fi
-  else
-    if git clone "$url"; then
-      local repo_name
-      repo_name="${url##*/}"
-      repo_name="${repo_name%.git}"
-      if [[ -d "$repo_name" ]]; then
-        cd "$repo_name" || cd "$cwd"
-      fi
-    else
-      return 1
-    fi
-  fi
-}
 
 # try
 eval "$(ruby ~/.local/try.rb init ~/code/try)"
@@ -88,8 +57,6 @@ eval "$(ruby ~/.local/try.rb init ~/code/try)"
 
 # Anthropic
 export DISABLE_TELEMETRY=1
-alias cld="claude --dangerously-skip-permissions"
-alias cldt="claude-trace --dangerously-skip-permissions"
 
 # Homebrew 镜像（清华）
 export HOMEBREW_BREW_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git"
@@ -100,6 +67,3 @@ export HOMEBREW_API_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottle
 # ripgrep 配置
 export RIPGREP_CONFIG_PATH="$HOME/.config/ripgrep/config"
 
-# mkdir + cd
-unalias md 2>/dev/null
-md() { mkdir -p "$1" && cd "$1"; }
