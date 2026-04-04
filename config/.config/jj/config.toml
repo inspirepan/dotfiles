@@ -1,0 +1,34 @@
+#:schema https://docs.jj-vcs.dev/latest/config-schema.json
+
+[user]
+name = "inspirepan"
+email = "narfnas@163.com"
+
+[ui]
+diff-formatter = "delta"
+
+[ui.diff]
+
+[diff.color-words]
+context = 10
+
+[diff.git]
+context = 3
+
+[colors]
+# 浅色 diff 主题
+"diff added".fg = "#2e5a32"
+"diff added".bg = "#dafbe1"
+"diff token".underline = false
+"diff header".fg = "#667e90"
+"diff file_header".fg = "#667e90"
+"diff file_header".bold = false
+"diff hunk_header".fg = "#93a4b1"
+"diff removed".fg = "#82071e"
+"diff removed".bg = "#ffecec"
+
+[revset-aliases]
+"immutable_heads()" = "builtin_immutable_heads() | remote_bookmarks()"
+
+[git]
+subprocess = true

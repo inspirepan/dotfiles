@@ -1,0 +1,48 @@
+# 主题
+# 注意：先克隆 vscode-blue-light-theme，再更新下面的路径
+# git clone git@github.com:inspirepan/vscode-blue-light-theme.git ~/code/GITHUB/inspirepan-vscode-blue-light-theme
+theme = light:blue-light,dark:blue-light-dark
+
+# 字体
+font-family-italic=Geist Mono
+font-family-italic=JetBrainsMono Nerd Font Mono
+font-family-italic=Menlo
+font-family-italic=STIX Two Math
+font-family-italic=Sarasa UI SC
+
+font-family-bold-italic=Geist Mono
+font-family-bold-italic=JetBrainsMono Nerd Font Mono
+font-family-bold-italic=Menlo
+font-family-bold-italic=STIX Two Math
+font-family-bold-italic=Sarasa UI SC
+
+font-family=Geist Mono
+font-family=JetBrainsMono Nerd Font Mono
+font-family=Menlo
+font-family=STIX Two Math
+
+font-variation-bold=wght=700
+font-variation-bold-italic=wght=700
+font-feature = ss05,ss03,ss06,ss07,ss01
+
+font-size=16
+font-thicken=true
+font-thicken-strength=1
+
+# 界面
+window-padding-x=15
+window-padding-y=2
+adjust-cursor-thickness=3
+adjust-cell-height=20%
+adjust-cell-width=3%
+
+unfocused-split-opacity=1
+link-url=true
+window-save-state=always
+cursor-style-blink=true
+
+background-opacity=0.95
+background-blur=true
+
+# 按键绑定
+keybind="shift+enter=text:\n"

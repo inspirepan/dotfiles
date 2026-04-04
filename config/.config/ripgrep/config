@@ -1,0 +1,29 @@
+# 最大列宽
+--max-columns=200
+--max-columns-preview
+
+# 智能大小写
+--smart-case
+
+# 行号
+--line-number
+
+# 搜索隐藏文件
+--hidden
+
+# 跟随符号链接
+--follow
+
+# 排除常见噪音
+--glob=!.git/*
+--glob=!node_modules/*
+--glob=!.venv/*
+--glob=!__pycache__/*
+--glob=!*.min.js
+--glob=!*.min.css
+--glob=!dist/*
+--glob=!build/*
+--glob=!.next/*
+--glob=!target/*
+--glob=!*.lock
+--glob=!package-lock.json

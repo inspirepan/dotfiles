@@ -1,0 +1,33 @@
+[user]
+	name = inspirepan
+	email = narfnas@163.com
+
+[includeIf "gitdir:~/code/GITHUB/"]
+	path = ~/.gitconfig-github
+
+[credential "https://github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential
+
+[core]
+	pager = delta
+
+[interactive]
+	diffFilter = delta --color-only
+
+[delta]
+	line-numbers = true
+	syntax-theme = GitHub
+	side-by-side = false
+	plus-style = syntax "#dafbe1"
+	plus-emph-style = syntax "#aceebb"
+	minus-style = syntax "#ffecec"
+	minus-emph-style = syntax "#ffcfcf"
+	hunk-header-style = syntax
+	file-style = blue bold
+	file-decoration-style = blue ul
+	line-numbers-plus-style = "#2e5a32"
+	line-numbers-minus-style = "#82071e"
