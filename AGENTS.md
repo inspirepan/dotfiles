@@ -19,7 +19,7 @@
 |------|------|
 | `docs/setup-guide.md` | 新机器配置清单（Phase 0 手动 bootstrap，Phase 1-10 agent 执行） |
 | `docs/fonts.md` | 字体清单（brew 安装） |
-| `docs/proxy-tunnel.md` | Clash/Mihomo 与 Cloudflare Tunnel/Tailscale 共存方案 |
+| `docs/proxy-tunnel.md` | FlClash TUN 与 Cloudflare Tunnel/Tailscale 共存方案 |
 | `Brewfile` | `brew bundle --file=Brewfile` 一次装齐所有包 |
 | `scripts/setup-omz.sh` | 安装 oh-my-zsh + 插件 + jj 主题 |
 | `scripts/macos-defaults.sh` | 通过 `defaults write` 设置 macOS 系统偏好 |

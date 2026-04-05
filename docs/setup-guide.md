@@ -81,7 +81,7 @@ brew bundle --file=~/code/dotfiles/Brewfile
 
 ```bash
 brew install --cask karabiner-elements  # 键盘映射
-brew install --cask tailscale           # VPN
+brew install --cask tailscale           # VPN（必须用 cask，formula 只有 CLI 没有菜单栏 GUI）
 brew install --cask font-sf-mono        # Apple 字体
 brew install --cask font-sf-pro         # Apple 字体
 ```
@@ -226,7 +226,29 @@ export OPENAI_API_KEY="..."
 剩余需要手动完成：
 - [ ] Karabiner-Elements：配置已通过 stow 链接，确认按键映射已正确加载
 
-## Phase 10：可选 / 按需安装
+## Phase 10：Tailscale 与 SSH
+
+Tailscale 在 Phase 1 通过 cask 安装，Phase 8 登录授权。本阶段配置设备名和远程登录。
+
+1. 设置设备主机名（每台机器上各自执行）：
+
+```bash
+tailscale set --hostname=pan-mbp-16   # 按实际机器命名
+```
+
+2. [manual] 开启远程登录（macOS sshd），允许其他设备通过 SSH 连入：
+
+   **系统设置 -> 通用 -> 共享 -> 远程登录** -> 打开
+
+3. 验证：从另一台 Tailscale 设备 SSH 连入：
+
+```bash
+ssh panjx@pan-mbp-16
+```
+
+> MagicDNS 默认开启，可以直接用主机名。如果和 FlClash TUN 模式冲突，参考 [proxy-tunnel.md](proxy-tunnel.md) 关闭。
+
+## Phase 11：可选 / 按需安装
 
 - [ ] Cloudflare Wrangler：`npm i -g wrangler`
 - [ ] OrbStack
