@@ -155,6 +155,7 @@ uv tool install llm
 ### npm 全局包
 
 ```bash
+npm i -g pnpm
 npm i -g @anthropic-ai/claude-code
 npm i -g @mariozechner/claude-trace
 npm i -g @mariozechner/pi-coding-agent
