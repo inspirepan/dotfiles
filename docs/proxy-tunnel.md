@@ -70,6 +70,30 @@ launchctl start com.cloudflare.cloudflared
 
 ---
 
+## SSH 与 TUN 模式
+
+### 问题
+
+TUN 模式会接管所有流量，包括 SSH 连接。SSH 是长连接且非 HTTP 协议，
+经过 TUN 处理后连接会被截断，表现为 `Connection closed by x.x.x.x port 22`。
+
+### 修复：Clash Verge
+
+在规则增强（prepend rules）中添加：
+
+```yaml
+- PROCESS-NAME,ssh,DIRECT
+```
+
+所有 `ssh` 进程的流量会绕过 TUN 直连，不影响其他代理规则。
+
+### 说明
+
+- `dotfiles/ssh/.ssh/config` 中已配置 GitHub SSH 走 `ssh.github.com:443`，stow 后生效，作为额外的保障。
+- 如果只需要解决 GitHub 的问题，也可以只加 `DOMAIN-SUFFIX,github.com,DIRECT`，但 `PROCESS-NAME,ssh` 更通用，覆盖所有 SSH 连接。
+
+---
+
 ## Tailscale 与 TUN 模式（Clash Verge）
 
 ### 为 Tailscale 子网绕过 TUN

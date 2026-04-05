@@ -28,9 +28,12 @@ brew completions link
 
 ```bash
 brew install gh
-gh auth login
+gh auth login          # 选 SSH，会自动生成 key 并上传
+
+# 克隆前先关掉 FlClash 的 TUN（虚拟网卡）模式，否则 SSH 连接会被截断
 mkdir -p ~/code
 git clone git@github.com:inspirepan/dotfiles.git ~/code/dotfiles
+# 克隆完成后可以重新开启 TUN
 ```
 
 8. 安装 uv 和 klaude：
