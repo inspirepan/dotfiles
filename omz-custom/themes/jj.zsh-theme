@@ -93,7 +93,7 @@ _jj_theme_agent_info() {
 # Resolve Tailscale hostname once at load time (falls back to system hostname)
 _jj_theme_hostname="%m"
 if command -v tailscale &>/dev/null; then
-  _ts_name=$(tailscale status --self --json 2>/dev/null | command grep -o '"HostName":"[^"]*"' | cut -d'"' -f4)
+  _ts_name=$(tailscale status --self --json 2>/dev/null | command grep -o '"HostName": *"[^"]*"' | head -1 | cut -d'"' -f4)
   [[ -n "$_ts_name" ]] && _jj_theme_hostname="$_ts_name"
   unset _ts_name
 else
