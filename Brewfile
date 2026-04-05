@@ -1,9 +1,6 @@
 # Homebrew Bundle 清单
 # 安装：brew bundle --file=~/code/dotfiles/Brewfile
 
-# --- Tap 源 ---
-tap "homebrew/cask-fonts"
-
 # --- 终端与命令行 ---
 brew "zsh"
 brew "tmux"
@@ -16,6 +13,9 @@ brew "lazygit"
 # --- Jujutsu（jj）---
 brew "jj"
 brew "jjui"
+
+# --- 配置管理 ---
+brew "stow"                  # symlink 管理
 
 # --- CLI 工具 ---
 brew "eza"                   # 现代版 ls
@@ -41,13 +41,12 @@ brew "cloudflared"
 brew "duti"
 
 # --- Cask：应用 ---
-cask "ghostty@tip"
+cask "ghostty"
 cask "google-chrome"
 cask "visual-studio-code"
 cask "zed"
 cask "notion"
 cask "raycast"
-cask "karabiner-elements"
 cask "mos"
 cask "betterdisplay"
 cask "itsycal"
@@ -55,7 +54,6 @@ cask "localsend"
 cask "snipaste"
 cask "spotify"
 cask "telegram"
-cask "tailscale"
 cask "libreoffice"
 cask "stats"
 
@@ -68,8 +66,6 @@ cask "font-jetbrains-mono"
 cask "font-jetbrains-mono-nerd-font"
 cask "font-lilex"
 cask "font-ibm-plex-sans"
-cask "font-sf-mono"
-cask "font-sf-pro"
 cask "font-sarasa-gothic"
 cask "font-work-sans"
 cask "font-roboto-mono"

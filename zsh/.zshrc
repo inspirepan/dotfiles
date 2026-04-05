@@ -50,7 +50,7 @@ source ~/.zsh_aliases
 [[ -f ~/.zshenv.secret ]] && source ~/.zshenv.secret
 
 # try
-eval "$(ruby ~/.local/try.rb init ~/code/try)"
+eval "$(/opt/homebrew/opt/ruby/bin/ruby ~/.local/try.rb init ~/code/try)"
 
 # bun 补全
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
@@ -66,4 +66,3 @@ export HOMEBREW_API_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottle
 
 # ripgrep 配置
 export RIPGREP_CONFIG_PATH="$HOME/.config/ripgrep/config"
-

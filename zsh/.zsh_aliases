@@ -11,7 +11,9 @@ alias jjb="jj bookmark list --all"
 alias jjd="jj diff"
 alias jjl="jj log"
 alias jjs="jj status"
+alias jjf="jj git fetch"
 alias jjnm="jj git fetch && jj new main@origin"
+jjt() { jj bookmark track "${1:-main}" --remote="${2:-origin}"; }
 
 # quick edit
 alias zshrc="$EDITOR ~/.zshrc"

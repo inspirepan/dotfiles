@@ -49,7 +49,19 @@ uv tool install klaude-code
 export ANTHROPIC_API_KEY="..."
 ```
 
-10. 启动 agent：
+10. 配置 Homebrew 镜像（加速国内下载）：
+
+```bash
+export HOMEBREW_BREW_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git"
+export HOMEBREW_CORE_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git"
+export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles"
+export HOMEBREW_API_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api"
+brew update
+```
+
+> 这些变量在 Phase 3 stow 后会由 `.zshrc` 永久生效，这里先手动 export 以加速 Phase 1。
+
+11. 启动 agent：
 
 ```bash
 cd ~/code/dotfiles && klaude
@@ -63,6 +75,15 @@ cd ~/code/dotfiles && klaude
 
 ```bash
 brew bundle --file=~/code/dotfiles/Brewfile
+```
+
+以下包需要 sudo 安装 pkg，agent 无法自动执行，需手动在终端运行：
+
+```bash
+brew install --cask karabiner-elements  # 键盘映射
+brew install --cask tailscale           # VPN
+brew install --cask font-sf-mono        # Apple 字体
+brew install --cask font-sf-pro         # Apple 字体
 ```
 
 ## Phase 2：Oh-my-zsh + 插件
@@ -83,7 +104,7 @@ brew bundle --file=~/code/dotfiles/Brewfile
 
 ```bash
 cd ~/code/dotfiles
-stow zsh git config ssh
+stow -t ~ zsh git config ssh
 ```
 
 这会创建以下符号链接：
@@ -92,8 +113,8 @@ stow zsh git config ssh
 - `~/.gitconfig` -> `dotfiles/git/.gitconfig`
 - `~/.gitconfig-github` -> `dotfiles/git/.gitconfig-github`
 - `~/.config/ghostty/config` -> `dotfiles/config/.config/ghostty/config`
-- `~/.config/ghostty/themes/blue-light.theme` -> `dotfiles/config/.config/ghostty/themes/blue-light.theme`
-- `~/.config/ghostty/themes/blue-light-dark.theme` -> `dotfiles/config/.config/ghostty/themes/blue-light-dark.theme`
+- `~/.config/ghostty/themes/blue-light` -> `dotfiles/config/.config/ghostty/themes/blue-light`
+- `~/.config/ghostty/themes/blue-light-dark` -> `dotfiles/config/.config/ghostty/themes/blue-light-dark`
 - `~/.config/ripgrep/config` -> `dotfiles/config/.config/ripgrep/config`
 - `~/.config/jj/config.toml` -> `dotfiles/config/.config/jj/config.toml`
 - `~/.config/jjui/config.toml` -> `dotfiles/config/.config/jjui/config.toml`
@@ -115,8 +136,10 @@ uv python install 3.14 --default
 curl -fsSL https://bun.com/install | bash
 
 # try（一次性小项目工具）
-mkdir -p ~/.local
+mkdir -p ~/.local/lib
 curl -sL https://raw.githubusercontent.com/tobi/try/refs/heads/main/try.rb > ~/.local/try.rb
+curl -sL https://raw.githubusercontent.com/tobi/try/refs/heads/main/lib/tui.rb > ~/.local/lib/tui.rb
+curl -sL https://raw.githubusercontent.com/tobi/try/refs/heads/main/lib/fuzzy.rb > ~/.local/lib/fuzzy.rb
 chmod +x ~/.local/try.rb
 ```
 
@@ -196,7 +219,7 @@ export OPENAI_API_KEY="..."
 - Dock：大小 58，放在右侧，开启放大，隐藏最近使用项目，不按最近使用自动重排 Spaces
 - 触发角：左下角调度中心，右下角快速备忘录
 - 访达：显示路径栏和状态栏，默认搜索当前文件夹，关闭修改扩展名警告
-- 键盘：关闭自动大写、双空格句号、智能破折号 / 引号、拼写纠正
+- 键盘：F 键用作标准功能键、关闭自动大写、双空格句号、智能破折号 / 引号、拼写纠正
 - 台前调度：启用
 
 剩余需要手动完成：
@@ -206,4 +229,8 @@ export OPENAI_API_KEY="..."
 
 - [ ] Cloudflare Wrangler：`npm i -g wrangler`
 - [ ] OrbStack
-- [ ] 代理 + Tunnel / VPN 共存（见 [proxy-tunnel.md](proxy-tunnel.md)）
+- [ ] FlClash TUN 模式覆写规则（SSH / Cloudflare Tunnel / Tailscale 直连）：
+  ```bash
+  ~/code/dotfiles/scripts/setup-flclash.sh
+  ```
+  详细说明见 [proxy-tunnel.md](proxy-tunnel.md)
