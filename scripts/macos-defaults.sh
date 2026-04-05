@@ -36,6 +36,17 @@ defaults write com.apple.finder ShowPathbar -bool true
 defaults write com.apple.finder ShowStatusBar -bool true
 # 默认搜索当前文件夹（而不是“这台 Mac”）
 defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
+# 新窗口默认打开个人目录（而非"最近使用"）
+defaults write com.apple.finder NewWindowTarget -string "PfHm"
+defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}/"
+# 默认使用列表视图
+defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
+# 显示隐藏文件
+defaults write com.apple.finder AppleShowAllFiles -bool true
+# 始终显示文件扩展名
+defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+# 按名称排序时文件夹置顶
+defaults write com.apple.finder _FXSortFoldersFirst -bool true
 # 修改文件扩展名时不弹出警告
 defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
 
