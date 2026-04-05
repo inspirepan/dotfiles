@@ -1,22 +1,34 @@
 #!/bin/bash
-# Copy Ghostty terminfo to a remote host via SSH.
+# Install Ghostty terminfo (xterm-ghostty) locally or on remote hosts.
 # Fixes duplicate character display when using Ghostty + SSH.
 #
-# Usage: ./setup-ghostty-terminfo.sh user@host [user@host2 ...]
+# Usage:
+#   ./setup-ghostty-terminfo.sh              # install locally
+#   ./setup-ghostty-terminfo.sh user@host    # install on remote host(s)
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+TERMINFO_FILE="$SCRIPT_DIR/../config/.config/ghostty/xterm-ghostty.terminfo"
+
+get_terminfo() {
+  if [[ -f "$TERMINFO_FILE" ]]; then
+    cat "$TERMINFO_FILE"
+  elif infocmp -x xterm-ghostty &>/dev/null; then
+    infocmp -x xterm-ghostty
+  else
+    echo "错误: 找不到 xterm-ghostty terminfo（$TERMINFO_FILE 不存在，本地也未安装）" >&2
+    exit 1
+  fi
+}
+
 if [[ $# -eq 0 ]]; then
-  echo "用法: $0 user@host [user@host2 ...]"
-  exit 1
+  echo ">>> 正在本地安装 xterm-ghostty terminfo ..."
+  get_terminfo | tic -x -
+  echo ">>> 本地安装完成"
+else
+  for host in "$@"; do
+    echo ">>> 正在传输 xterm-ghostty terminfo 到 $host ..."
+    get_terminfo | ssh "$host" 'tic -x -'
+    echo ">>> $host 完成"
+  done
 fi
-
-if ! infocmp -x xterm-ghostty &>/dev/null; then
-  echo "错误: 本地没有 xterm-ghostty terminfo，请先安装 Ghostty"
-  exit 1
-fi
-
-for host in "$@"; do
-  echo ">>> 正在传输 xterm-ghostty terminfo 到 $host ..."
-  infocmp -x xterm-ghostty | ssh "$host" 'tic -x -'
-  echo ">>> $host 完成"
-done

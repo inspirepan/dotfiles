@@ -123,6 +123,12 @@ stow -t ~ zsh git config ssh
 - `~/.config/git/ignore` -> `dotfiles/config/.config/git/ignore`
 - `~/.ssh/config` -> `dotfiles/ssh/.ssh/config`
 
+安装 Ghostty terminfo（让其他设备 SSH 进来时终端渲染正常）：
+
+```bash
+~/code/dotfiles/scripts/setup-ghostty-terminfo.sh
+```
+
 **注意**：Karabiner-Elements 第一次启动时可能不接受符号链接配置。
 如果它覆盖了符号链接，就先改为直接复制文件，之后再重新 `stow`。
 
@@ -240,15 +246,13 @@ tailscale set --hostname=pan-mbp-16   # 按实际机器命名
 
    **系统设置 -> 通用 -> 共享 -> 远程登录** -> 打开
 
-3. 传输 Ghostty terminfo 到远程机器（解决 SSH 下字符重复显示问题）：
+3. （可选）如果需要 SSH 到未跑过 dotfiles setup 的机器（如 Linux 服务器），传输 terminfo：
 
 ```bash
-~/code/dotfiles/scripts/setup-ghostty-terminfo.sh panjx@pan-mbp-16
+~/code/dotfiles/scripts/setup-ghostty-terminfo.sh user@remote-host
 ```
 
-> Ghostty 使用 `xterm-ghostty` 作为 TERM，远程机器如果没有对应的 terminfo，
-> 终端能力会被错误解析，导致 zsh-autosuggestions 渲染异常（打字重复）。
-> 每台需要 SSH 连入的远程机器都需要执行一次。
+> 跑过 dotfiles setup 的机器已在 Phase 3 安装了 terminfo，不需要再传。
 
 4. 验证：从另一台 Tailscale 设备 SSH 连入：
 
