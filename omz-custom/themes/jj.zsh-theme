@@ -90,17 +90,34 @@ _jj_theme_agent_info() {
   [[ ${#parts[@]} -gt 0 ]] && echo " %F{8}(${(j:, :)parts})%f"
 }
 
+# Resolve Tailscale hostname once at load time (falls back to system hostname)
+_jj_theme_hostname="%m"
+if command -v tailscale &>/dev/null; then
+  _ts_name=$(tailscale status --self --json 2>/dev/null | command grep -o '"HostName":"[^"]*"' | cut -d'"' -f4)
+  [[ -n "$_ts_name" ]] && _jj_theme_hostname="$_ts_name"
+  unset _ts_name
+else
+  _ts_ip=$(ifconfig utun5 2>/dev/null | grep 'inet ' | awk '{print $2}')
+  if [[ -n "$_ts_ip" ]]; then
+    _ts_name=$(dscacheutil -q host -a ip_address "$_ts_ip" 2>/dev/null | awk -F'\\.' '/^name:.*\.ts\.net/{print $1}' | sed 's/^name: //')
+    [[ -n "$_ts_name" ]] && _jj_theme_hostname="$_ts_name"
+    unset _ts_name _ts_ip
+  fi
+fi
+
 # Cache VCS info in precmd so Ctrl-C won't break the prompt
 _jj_theme_cached_vcs=""
 _jj_theme_cached_agent=""
+_jj_theme_cached_host=""
 _jj_theme_precmd() {
   _jj_theme_cached_vcs="$(_jj_theme_vcs_info)"
   _jj_theme_cached_agent="$(_jj_theme_agent_info)"
+  [[ -n "$SSH_CONNECTION" ]] && _jj_theme_cached_host="%F{yellow}${_jj_theme_hostname}%f " || _jj_theme_cached_host=""
 }
 precmd_functions+=(_jj_theme_precmd)
 
 setopt PROMPT_SUBST
 
 PROMPT='
-%F{blue}%~%f${_jj_theme_cached_vcs}${_jj_theme_cached_agent}
+${_jj_theme_cached_host}%F{blue}%~%f${_jj_theme_cached_vcs}${_jj_theme_cached_agent}
 %F{magenta}➜%f '
