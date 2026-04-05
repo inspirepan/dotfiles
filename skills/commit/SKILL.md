@@ -19,6 +19,7 @@ metadata:
    - Subject: `<type>(<scope>): <summary>`
    - Blank line
    - Bulleted details for important file-level edits
+   - For prompt engineering files (SKILL.md, AGENTS.md, CLAUDE.md, Skillfile, system-prompt-*.md, etc.), use a type that reflects the actual impact (`feat`, `refactor`, `fix`, etc.) instead of `docs`. These files define agent behavior and are functional changes, not documentation.
 5. If the working copy contains only that one cohesive change, commit it directly:
 
 ```bash
