@@ -104,7 +104,7 @@ brew install --cask font-sf-pro         # Apple 字体
 
 ```bash
 cd ~/code/dotfiles
-stow -t ~ zsh git config ssh
+stow --no-folding -t ~ zsh git config ssh
 ```
 
 这会创建以下符号链接：
@@ -171,7 +171,7 @@ npm i -g pptxgenjs
 
 ## Phase 5：主题
 
-Ghostty 主题已通过 stow 管理（`config/.config/ghostty/themes/`），第五阶段的 `stow config` 会自动创建符号链接。
+Ghostty 主题已通过 stow 管理（`config/.config/ghostty/themes/`），Phase 3 的 stow 会自动创建符号链接。
 
 VSCode 主题从 dotfiles 安装：
 

@@ -4,7 +4,7 @@
 
 ## 目录结构
 
-- `zsh/`, `git/`, `ssh/`, `config/` -- stow 包，目录结构镜像 `$HOME`。执行 `cd ~/code/dotfiles && stow zsh git config ssh` 创建 symlink。Ghostty 自定义主题在 `config/.config/ghostty/themes/` 中。
+- `zsh/`, `git/`, `ssh/`, `config/` -- stow 包，目录结构镜像 `$HOME`。执行 `cd ~/code/dotfiles && stow --no-folding -t ~ zsh git config ssh` 创建 symlink。Ghostty 自定义主题在 `config/.config/ghostty/themes/` 中。
 - `omz-custom/` -- oh-my-zsh 自定义主题 (`jj.zsh-theme`)，由 `scripts/setup-omz.sh` 复制到 `~/.oh-my-zsh/custom/themes/`。
 - `themes/` -- 自定义主题。`themes/vscode-blue-light/` 存放 VSCode 主题源文件和 vsix。
 - `Brewfile` -- 所有 Homebrew formulae、cask 和字体。

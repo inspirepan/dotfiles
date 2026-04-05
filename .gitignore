@@ -7,3 +7,6 @@ config/.config/jj/repos/
 
 # Karabiner auto-generated backups
 config/.config/karabiner/automatic_backups/
+
+# Zed auto-generated prompt library database
+config/.config/zed/prompts/
