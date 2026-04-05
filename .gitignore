@@ -1,3 +1,9 @@
 .DS_Store
 *.secret
 *.local
+
+# jj per-repo configs (machine-specific, contain absolute paths)
+config/.config/jj/repos/
+
+# Karabiner auto-generated backups
+config/.config/karabiner/automatic_backups/
