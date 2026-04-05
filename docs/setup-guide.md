@@ -210,9 +210,7 @@ export OPENAI_API_KEY="..."
 - [ ] [manual] Spotify：登录
 - [ ] [manual] Tailscale：登录并授权网络扩展
 - [ ] [manual] VSCode：用 GitHub 登录并同步设置 / 扩展
-- [ ] [manual] Raycast：导入设置备份
-- [ ] [manual] BetterDisplay：配置显示参数
-- [ ] [manual] Itsycal：配置日期格式
+
 
 ## Phase 9：macOS 偏好设置
 
@@ -225,12 +223,19 @@ export OPENAI_API_KEY="..."
 这会配置：
 - Dock：大小 58，放在右侧，开启放大，隐藏最近使用项目，不按最近使用自动重排 Spaces
 - 触发角：左下角调度中心，右下角快速备忘录
-- 访达：显示路径栏和状态栏，默认搜索当前文件夹，关闭修改扩展名警告
+- 访达：显示路径栏和状态栏，默认搜索当前文件夹，关闭修改扩展名警告，新窗口打开个人目录，列表视图，显示隐藏文件和扩展名，文件夹置顶
 - 键盘：F 键用作标准功能键、关闭自动大写、双空格句号、智能破折号 / 引号、拼写纠正
 - 台前调度：启用
 
 剩余需要手动完成：
-- [ ] Karabiner-Elements：配置已通过 stow 链接，确认按键映射已正确加载
+- [ ] 充电上限设为 80%：**系统设置 -> 电池 -> 充电 -> (i)** -> 设置限制为 80%（需 macOS Tahoe 26.4+；旧版可用 `brew install batt` 后 `sudo batt limit 80`）
+- [ ] Karabiner-Elements：启动，授权辅助功能和输入监控权限，确认按键映射已正确加载
+- [ ] Stats：启动，授权辅助功能权限，配置菜单栏显示项
+- [ ] BetterDisplay：启动，授权辅助功能和屏幕录制权限，配置显示参数
+- [ ] Mos：启动，授权辅助功能权限，配置鼠标滚轮平滑和方向
+- [ ] Itsycal：启动，授权日历访问权限，配置日期格式
+- [ ] Raycast：启动，授权辅助功能权限，导入设置备份
+- [ ] Snipaste：启动，授权屏幕录制权限
 
 ## Phase 10：Tailscale 与 SSH
 
