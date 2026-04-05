@@ -12,14 +12,15 @@ Phase 0 需要手动完成（bootstrap agent）。从 Phase 1 开始，在 dotfi
 1. 登录 Apple 账户
 2. 安装 WeChat 并登录
 3. 安装微信输入法（从微信官网获取）
-4. 安装 Clash Verge，导入订阅并配置代理
+4. 安装 [FlClash](https://github.com/chen08209/FlClash/releases/)，导入订阅并配置代理
 5. 安装 Chrome，登录并同步扩展 / 书签
 6. 安装 Homebrew：
 
 ```bash
+export https_proxy=http://localhost:7890
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
-eval "$(/opt/homebrew/bin/brew shellenv)"
+echo 'eval "$(/opt/homebrew/bin/brew shellenv zsh)"' >> ~/.zprofile
+eval "$(/opt/homebrew/bin/brew shellenv zsh)"
 brew completions link
 ```
 
