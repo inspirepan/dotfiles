@@ -235,7 +235,7 @@ export OPENAI_API_KEY="..."
 - [ ] Mos：启动，授权辅助功能权限，配置鼠标滚轮平滑和方向
 - [ ] Itsycal：启动，授权日历访问权限，配置日期格式
 - [ ] Raycast：启动，授权辅助功能权限，导入设置备份
-- [ ] Snipaste：启动，授权屏幕录制权限
+- [ ] [LongShot](https://longshot.chitaner.com/)：从 Mac App Store 安装，启动并授权屏幕录制权限
 
 ## Phase 10：Tailscale 与 SSH
 
