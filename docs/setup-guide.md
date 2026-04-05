@@ -240,7 +240,17 @@ tailscale set --hostname=pan-mbp-16   # 按实际机器命名
 
    **系统设置 -> 通用 -> 共享 -> 远程登录** -> 打开
 
-3. 验证：从另一台 Tailscale 设备 SSH 连入：
+3. 传输 Ghostty terminfo 到远程机器（解决 SSH 下字符重复显示问题）：
+
+```bash
+~/code/dotfiles/scripts/setup-ghostty-terminfo.sh panjx@pan-mbp-16
+```
+
+> Ghostty 使用 `xterm-ghostty` 作为 TERM，远程机器如果没有对应的 terminfo，
+> 终端能力会被错误解析，导致 zsh-autosuggestions 渲染异常（打字重复）。
+> 每台需要 SSH 连入的远程机器都需要执行一次。
+
+4. 验证：从另一台 Tailscale 设备 SSH 连入：
 
 ```bash
 ssh panjx@pan-mbp-16
