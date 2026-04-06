@@ -49,19 +49,7 @@ uv tool install klaude-code
 export ANTHROPIC_API_KEY="..."
 ```
 
-10. 配置 Homebrew 镜像（加速国内下载）：
-
-```bash
-export HOMEBREW_BREW_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git"
-export HOMEBREW_CORE_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git"
-export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles"
-export HOMEBREW_API_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api"
-brew update
-```
-
-> 这些变量在 Phase 3 stow 后会由 `.zshrc` 永久生效，这里先手动 export 以加速 Phase 1。
-
-11. 启动 agent：
+10. 启动 agent：
 
 ```bash
 cd ~/code/dotfiles && klaude
@@ -76,6 +64,8 @@ cd ~/code/dotfiles && klaude
 ```bash
 brew bundle --file=~/code/dotfiles/Brewfile
 ```
+
+其中也会安装 `fzf` 和 `neovim`，供 `fb` 做上下键交互选文件并直接进入只读查看。
 
 以下包需要 sudo 安装 pkg，agent 无法自动执行，需手动在终端运行：
 
@@ -116,6 +106,7 @@ stow --no-folding -t ~ zsh git config ssh
 - `~/.config/ghostty/themes/blue-light` -> `dotfiles/config/.config/ghostty/themes/blue-light`
 - `~/.config/ghostty/themes/blue-light-dark` -> `dotfiles/config/.config/ghostty/themes/blue-light-dark`
 - `~/.config/ripgrep/config` -> `dotfiles/config/.config/ripgrep/config`
+- `~/.config/nvim/init.lua` -> `dotfiles/config/.config/nvim/init.lua`
 - `~/.config/jj/config.toml` -> `dotfiles/config/.config/jj/config.toml`
 - `~/.config/jjui/config.toml` -> `dotfiles/config/.config/jjui/config.toml`
 - `~/.config/zed/settings.json` -> `dotfiles/config/.config/zed/settings.json`
