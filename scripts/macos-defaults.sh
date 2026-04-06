@@ -63,6 +63,8 @@ defaults write -g NSAutomaticDashSubstitutionEnabled -bool false
 defaults write -g NSAutomaticQuoteSubstitutionEnabled -bool false
 # 不自动进行拼写纠正
 defaults write -g NSAutomaticSpellingCorrectionEnabled -bool false
+# 不按文稿自动切换输入源（所有应用共享同一个输入法状态）
+defaults write com.apple.HIToolbox AppleGlobalTextInputProperties -dict TextInputGlobalPropertyPerContextInput 0
 
 # --- Spotlight ---
 # 禁用 Spotlight 的 Cmd+Space 快捷键，给 Raycast 让路
