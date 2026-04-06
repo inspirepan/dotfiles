@@ -32,6 +32,46 @@ ram() { local total=$(sysctl -n hw.memsize); ps aux -m | awk -v total="$total" '
 unalias md 2>/dev/null
 md() { mkdir -p "$1" && cd "$1"; }
 
+# fd + nvim: open a single match directly, or choose when there are many.
+fb() {
+  [[ $# -eq 0 ]] && { echo "Usage: fb <fd-pattern> [path ...]"; return 1; }
+  whence -p nvim >/dev/null 2>&1 || { echo "nvim is not installed."; return 1; }
+
+  local -a matches
+  local file choice
+
+  while IFS= read -r -d '' file; do
+    matches+=("$file")
+  done < <(fd -H -t f -0 "$@")
+
+  case ${#matches[@]} in
+    0)
+      echo "No files matched."
+      return 1
+      ;;
+    1)
+      nvim -RM -- "${matches[1]}"
+      ;;
+    *)
+      if command -v fzf >/dev/null 2>&1; then
+        choice=$(printf '%s\n' "${matches[@]}" | fzf \
+          --prompt='fb> ' \
+          --height=40% \
+          --layout=reverse \
+          --preview 'bat --style=numbers --color=always --line-range=:200 {}') || return $?
+        [[ -n "$choice" ]] && nvim -RM -- "$choice"
+      else
+        echo "Matched ${#matches[@]} files:"
+        select choice in "${matches[@]}"; do
+          [[ -n "$choice" ]] || { echo "Invalid selection."; continue; }
+          nvim -RM -- "$choice"
+          break
+        done
+      fi
+      ;;
+  esac
+}
+
 # gclone: clone GitHub repo to ~/code/GITHUB/org-repo
 gclone() {
   local url="$1"

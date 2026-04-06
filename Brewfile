@@ -21,6 +21,8 @@ brew "stow"                  # symlink 管理
 brew "eza"                   # 现代版 ls
 brew "bat"                   # 现代版 cat
 brew "fd"                    # 现代版 find
+brew "fzf"                   # 模糊选择器（供 fb 上下键选文件）
+brew "neovim"                # 终端代码查看/编辑（供 fb 使用）
 brew "ripgrep"               # 现代版 grep
 brew "tree"
 brew "jq"
