@@ -25,6 +25,9 @@ font-variation-bold=wght=700
 font-variation-bold-italic=wght=700
 font-feature = ss05,ss03,ss06,ss07,ss01
 
+# TX-02 font-feature
+#font-feature = ss02,ss04
+
 font-size=16
 font-thicken=true
 font-thicken-strength=1
