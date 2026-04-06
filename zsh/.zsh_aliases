@@ -19,6 +19,7 @@ jjt() { jj bookmark track "${1:-main}" --remote="${2:-origin}"; }
 
 # quick edit
 alias zshrc="$EDITOR ~/.zshrc"
+alias zshenv="$EDITOR ~/.zshenv.secret"
 alias aliases="$EDITOR ~/.zsh_aliases"
 alias cwd="pwd | tr -d '\n' | pbcopy"
 
