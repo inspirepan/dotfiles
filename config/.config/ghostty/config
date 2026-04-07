@@ -44,7 +44,7 @@ link-url=true
 window-save-state=always
 cursor-style-blink=true
 
-background-opacity=0.95
+background-opacity=0.9
 background-blur=true
 
 # 按键绑定

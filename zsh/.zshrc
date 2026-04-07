@@ -58,11 +58,5 @@ eval "$(/opt/homebrew/opt/ruby/bin/ruby ~/.local/try.rb init ~/code/try)"
 # Anthropic
 export DISABLE_TELEMETRY=1
 
-# Homebrew 镜像（清华）
-export HOMEBREW_BREW_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git"
-export HOMEBREW_CORE_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git"
-export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles"
-export HOMEBREW_API_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api"
-
 # ripgrep 配置
 export RIPGREP_CONFIG_PATH="$HOME/.config/ripgrep/config"
