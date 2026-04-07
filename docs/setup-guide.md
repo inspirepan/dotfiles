@@ -165,8 +165,12 @@ npm i -g pnpm
 npm i -g @anthropic-ai/claude-code
 npm i -g @mariozechner/claude-trace
 npm i -g @mariozechner/pi-coding-agent
+npm i -g agent-browser
 npm i -g wrangler
 npm i -g pptxgenjs
+
+# 首次安装 agent-browser 后执行一次，下载 Chrome for Testing
+agent-browser install
 ```
 
 ## Phase 5：主题
