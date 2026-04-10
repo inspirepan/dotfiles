@@ -38,7 +38,8 @@ bindkey '^[[Z' autosuggest-accept
 eval "$(zoxide init zsh)"
 
 # EDITOR
-export EDITOR="code --wait"
+export EDITOR="zed --wait --new"
+export VISUAL="$EDITOR"
 
 # BAT
 export BAT_THEME=ansi
@@ -60,3 +61,8 @@ export DISABLE_TELEMETRY=1
 
 # ripgrep 配置
 export RIPGREP_CONFIG_PATH="$HOME/.config/ripgrep/config"
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/panjx/.lmstudio/bin"
+# End of LM Studio CLI section
+
