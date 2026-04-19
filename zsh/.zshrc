@@ -25,6 +25,7 @@ ZSH_THEME_TERM_TAB_TITLE_IDLE="%15<..<%~%<<"
 typeset -U path
 export GOPATH="$HOME/go"
 path=(
+  /opt/homebrew/opt/ruby/bin
   $HOME/.local/bin
   $HOME/.cargo/bin
   $HOME/.bun/bin
@@ -51,7 +52,7 @@ source ~/.zsh_aliases
 [[ -f ~/.zshenv.secret ]] && source ~/.zshenv.secret
 
 # try
-eval "$(/opt/homebrew/opt/ruby/bin/ruby ~/.local/try.rb init ~/code/try)"
+eval "$(ruby ~/.local/try.rb init ~/code/try)"
 
 # bun 补全
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
