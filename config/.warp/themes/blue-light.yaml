@@ -1,0 +1,27 @@
+# Blue Light Theme for Warp
+# Based on the Blue Light VS Code theme
+name: Blue Light
+accent: '#2C7CCB'
+cursor: '#2C7CCB'
+background: '#f1f4f8'
+foreground: '#444444'
+details: lighter
+terminal_colors:
+  normal:
+    black: '#555555'
+    red: '#E3194C'
+    green: '#129769'
+    yellow: '#A16900'
+    blue: '#2C7CCB'
+    magenta: '#8B5FC7'
+    cyan: '#328696'
+    white: '#d0d0d0'
+  bright:
+    black: '#888888'
+    red: '#F84D6D'
+    green: '#4BAF85'
+    yellow: '#D28820'
+    blue: '#569BCF'
+    magenta: '#A882DE'
+    cyan: '#689FAD'
+    white: '#9b9b9b'

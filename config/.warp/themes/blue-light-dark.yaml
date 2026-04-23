@@ -1,0 +1,27 @@
+# Blue Light Dark Theme for Warp
+# Based on the Blue Light Cursor Dark VS Code theme
+name: Blue Light Dark
+accent: '#70b8e8'
+cursor: '#e8e8e8'
+background: '#191C23'
+foreground: '#e8e8e8'
+details: darker
+terminal_colors:
+  normal:
+    black: '#3a3a3a'
+    red: '#e85070'
+    green: '#5dc878'
+    yellow: '#f5d580'
+    blue: '#70b8e8'
+    magenta: '#d0a0d0'
+    cyan: '#60d0d8'
+    white: '#e0e5f0'
+  bright:
+    black: '#606060'
+    red: '#ff6080'
+    green: '#70e090'
+    yellow: '#ffe090'
+    blue: '#88c8f0'
+    magenta: '#e0b0e8'
+    cyan: '#78e0e8'
+    white: '#f0f0f0'

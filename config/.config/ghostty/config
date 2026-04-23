@@ -28,7 +28,7 @@ font-feature = ss05,ss03,ss06,ss07,ss01
 # TX-02 font-feature
 #font-feature = ss02,ss04
 
-font-size=14
+font-size=13
 font-thicken=true
 font-thicken-strength=1
 
@@ -45,7 +45,7 @@ link-url=true
 window-save-state=always
 cursor-style-blink=true
 
-background-opacity=0.9
+background-opacity=0.97
 background-blur=true
 
 # 按键绑定

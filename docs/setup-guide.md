@@ -105,6 +105,8 @@ stow --no-folding -t ~ zsh git config ssh
 - `~/.config/ghostty/config` -> `dotfiles/config/.config/ghostty/config`
 - `~/.config/ghostty/themes/blue-light` -> `dotfiles/config/.config/ghostty/themes/blue-light`
 - `~/.config/ghostty/themes/blue-light-dark` -> `dotfiles/config/.config/ghostty/themes/blue-light-dark`
+- `~/.warp/themes/blue-light.yaml` -> `dotfiles/config/.warp/themes/blue-light.yaml`
+- `~/.warp/themes/blue-light-dark.yaml` -> `dotfiles/config/.warp/themes/blue-light-dark.yaml`
 - `~/.config/ripgrep/config` -> `dotfiles/config/.config/ripgrep/config`
 - `~/.config/nvim/init.lua` -> `dotfiles/config/.config/nvim/init.lua`
 - `~/.config/jj/config.toml` -> `dotfiles/config/.config/jj/config.toml`
@@ -167,6 +169,8 @@ agent-browser install
 ## Phase 5：主题
 
 Ghostty 主题已通过 stow 管理（`config/.config/ghostty/themes/`），Phase 3 的 stow 会自动创建符号链接。
+
+Warp 主题同样通过 stow 管理（`config/.warp/themes/`），Phase 3 的 stow 会链接到 `~/.warp/themes/`。在 Warp 中打开 **Settings -> Appearance -> Themes**（或快捷键 `Cmd+P` 搜索 `Open Theme Picker`）即可选用 `Blue Light` / `Blue Light Dark`。
 
 VSCode 主题从 dotfiles 安装：
 
