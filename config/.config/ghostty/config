@@ -21,6 +21,7 @@ font-family=STIX Two Math
 font-family=苹方-简
 
 
+
 font-variation-bold=wght=700
 font-variation-bold-italic=wght=700
 font-feature = ss05,ss03,ss06,ss07,ss01
@@ -28,7 +29,7 @@ font-feature = ss05,ss03,ss06,ss07,ss01
 # TX-02 font-feature
 #font-feature = ss02,ss04
 
-font-size=13
+font-size=14
 font-thicken=true
 font-thicken-strength=1
 
@@ -39,6 +40,7 @@ adjust-cursor-thickness=3
 adjust-cell-height=20%
 adjust-cell-width=3%
 adjust-box-thickness=0
+macos-titlebar-style=transparent
 
 unfocused-split-opacity=1
 link-url=true
