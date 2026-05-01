@@ -39,7 +39,7 @@ bindkey '^[[Z' autosuggest-accept
 eval "$(zoxide init zsh)"
 
 # EDITOR
-export EDITOR="zed --wait --new"
+export EDITOR="nano"
 export VISUAL="$EDITOR"
 
 # BAT

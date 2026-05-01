@@ -5,7 +5,7 @@ name = "inspirepan"
 email = "narfnas@163.com"
 
 [ui]
-editor = "zed --wait --new"
+editor = "nano"
 diff-formatter = "delta"
 
 [ui.diff]
