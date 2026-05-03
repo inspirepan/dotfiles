@@ -101,7 +101,6 @@ stow --no-folding -t ~ zsh git config ssh
 - `~/.zshrc` -> `dotfiles/zsh/.zshrc`
 - `~/.zsh_aliases` -> `dotfiles/zsh/.zsh_aliases`
 - `~/.gitconfig` -> `dotfiles/git/.gitconfig`
-- `~/.gitconfig-github` -> `dotfiles/git/.gitconfig-github`
 - `~/.config/ghostty/config` -> `dotfiles/config/.config/ghostty/config`
 - `~/.config/ghostty/themes/blue-light` -> `dotfiles/config/.config/ghostty/themes/blue-light`
 - `~/.config/ghostty/themes/blue-light-dark` -> `dotfiles/config/.config/ghostty/themes/blue-light-dark`
@@ -119,6 +118,7 @@ stow --no-folding -t ~ zsh git config ssh
 安装 Ghostty terminfo（让其他设备 SSH 进来时终端渲染正常）：
 
 ```bash
+~/code/dotfiles/scripts/setup-ghostty-config.sh
 ~/code/dotfiles/scripts/setup-ghostty-terminfo.sh
 ```
 

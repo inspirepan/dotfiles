@@ -64,6 +64,6 @@ export DISABLE_TELEMETRY=1
 export RIPGREP_CONFIG_PATH="$HOME/.config/ripgrep/config"
 
 # Added by LM Studio CLI (lms)
-export PATH="$PATH:/Users/panjx/.lmstudio/bin"
+export PATH="$PATH:$HOME/.lmstudio/bin"
 # End of LM Studio CLI section
 
