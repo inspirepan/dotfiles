@@ -104,6 +104,7 @@ stow --no-folding -t ~ zsh git config ssh
 - `~/.config/ghostty/config` -> `dotfiles/config/.config/ghostty/config`
 - `~/.config/ghostty/themes/blue-light` -> `dotfiles/config/.config/ghostty/themes/blue-light`
 - `~/.config/ghostty/themes/blue-light-dark` -> `dotfiles/config/.config/ghostty/themes/blue-light-dark`
+- `~/.config/herdr/config.toml` -> `dotfiles/config/.config/herdr/config.toml`
 - `~/.warp/themes/blue-light.yaml` -> `dotfiles/config/.warp/themes/blue-light.yaml`
 - `~/.warp/themes/blue-light-dark.yaml` -> `dotfiles/config/.warp/themes/blue-light-dark.yaml`
 - `~/.config/ripgrep/config` -> `dotfiles/config/.config/ripgrep/config`

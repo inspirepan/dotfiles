@@ -1,5 +1,19 @@
 // Zed 设置
 {
+  "outline_panel": {
+    "dock": "left"
+  },
+  "collaboration_panel": {
+    "dock": "left"
+  },
+  "agent": {
+    "dock": "right",
+    "favorite_models": [],
+    "model_parameters": []
+  },
+  "git_panel": {
+    "dock": "left"
+  },
   "use_system_window_tabs": false,
   "bottom_dock_layout": "contained",
   "tab_bar": {
@@ -16,6 +30,7 @@
     "button": true
   },
   "project_panel": {
+    "dock": "left",
     "button": true
   },
   "status_bar": {
