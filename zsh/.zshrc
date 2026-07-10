@@ -1,3 +1,8 @@
+# Fallback for remote hosts that do not know Ghostty's terminfo.
+if [[ "$TERM" == "xterm-ghostty" ]] && ! infocmp "$TERM" >/dev/null 2>&1; then
+  export TERM=xterm-256color
+fi
+
 # ZSH 选项
 setopt AUTO_CD
 setopt CORRECT

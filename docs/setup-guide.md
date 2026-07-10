@@ -122,6 +122,8 @@ stow --no-folding -t ~ zsh git config ssh
 ~/code/dotfiles/scripts/setup-ghostty-terminfo.sh
 ```
 
+`~/.zshrc` 会在远端缺少 `xterm-ghostty` terminfo 时自动退回 `TERM=xterm-256color`。
+
 **注意**：Karabiner-Elements 第一次启动时可能不接受符号链接配置。
 如果它覆盖了符号链接，就先改为直接复制文件，之后再重新 `stow`。
 
