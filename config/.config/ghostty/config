@@ -2,24 +2,24 @@
 theme = light:blue-light,dark:blue-light-dark
 
 # 字体
+font-family-italic=TX-02
 font-family-italic=TX-02-Variable
-#font-family-italic=Maple Mono NF CN
 font-family-italic=Geist Mono
 font-family-italic=JetBrainsMono Nerd Font Mono
 font-family-italic=Menlo
 font-family-italic=STIX Two Math
 font-family-italic=Sarasa UI SC
 
+font-family-bold-italic=TX-02
 font-family-bold-italic=TX-02-Variable
-#font-family-bold-italic=Maple Mono NF CN
 font-family-bold-italic=Geist Mono
 font-family-bold-italic=JetBrainsMono Nerd Font Mono
 font-family-bold-italic=Menlo
 font-family-bold-italic=STIX Two Math
 font-family-bold-italic=Sarasa UI SC
 
-font-family=Paper Mono
-#font-family=Maple Mono NF CN
+font-family=TX-02
+font-family=TX-02-Variable
 font-family=Geist Mono
 font-family=JetBrainsMono Nerd Font Mono
 font-family=Menlo
