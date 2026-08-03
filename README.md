@@ -81,7 +81,7 @@ dotfiles/
 | `pid <name>` | 搜索正在运行的进程 |
 | `ram` | 按应用名汇总内存占用排行 |
 | `md <dir>` | mkdir + cd |
-| `gclone <url>` | 克隆 GitHub 仓库到 `~/code/GITHUB/org-repo` 并进入目录 |
+| `gclone <url>` | 浅克隆（`--depth=1`）GitHub 仓库到 `~/code/GITHUB/org-repo` 并进入目录 |
 | `cwd` | 复制当前路径到剪贴板 |
 
 ### macOS 系统设置

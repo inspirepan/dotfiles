@@ -72,7 +72,8 @@ fb() {
   esac
 }
 
-# gclone: clone GitHub repo to ~/code/GITHUB/org-repo
+# gclone: shallow clone GitHub repo to ~/code/GITHUB/org-repo
+# Use `git fetch --unshallow` inside the repo to get full history.
 gclone() {
   local url="$1"
   local cwd="$PWD"
@@ -89,14 +90,14 @@ gclone() {
 
     mkdir -p "$HOME/code/GITHUB" || return 1
 
-    if git -C "$HOME/code/GITHUB" clone "$url" "$dir"; then
+    if git -C "$HOME/code/GITHUB" clone --depth=1 "$url" "$dir"; then
       cd "$HOME/code/GITHUB/$dir" || cd "$cwd"
     else
       cd "$cwd"
       return 1
     fi
   else
-    if git clone "$url"; then
+    if git clone --depth=1 "$url"; then
       local repo_name
       repo_name="${url##*/}"
       repo_name="${repo_name%.git}"
