@@ -26,4 +26,6 @@ palette = 11=#D28820
 palette = 12=#569BCF
 palette = 13=#A882DE
 palette = 14=#689FAD
-palette = 15=#9b9b9b
+# Kept dark on purpose: herdr hardcodes its selection foreground to color 15
+# and pairs it with a mid-gray background, so a light value is unreadable there.
+palette = 15=#444444

@@ -1,7 +1,47 @@
+onboarding = false
+
+# Prefix key: kept for help (prefix+?), copy mode, and other auxiliary modes.
+[keys]
+prefix = "ctrl+a"
+
+# Workspaces
+new_workspace = "cmd+ctrl+t"
+close_workspace = "cmd+ctrl+w"
+
+# Tabs
+new_tab = "cmd+ctrl+c"
+switch_tab = "cmd+ctrl+1..9"
+
+# Panes
+split_vertical = "cmd+ctrl+v"
+split_horizontal = "cmd+ctrl+h"
+close_pane = "cmd+ctrl+x"
+zoom = "cmd+ctrl+z"
+
+# Navigate mode: cmd+ctrl+space enters, then h/j/k/l moves between panes,
+# up/down switches workspaces, esc exits. Does not intercept normal input.
+workspace_picker = "cmd+ctrl+space"
+
+# Follow the host terminal light/dark appearance and switch the Herdr UI theme.
+# Ghostty is set to light:blue-light,dark:blue-light-dark, so Herdr follows it.
 [theme]
 auto_switch = true
-dark_name = "catppuccin"
-light_name = "catppuccin-latte"
+light_name = "tokyo-night-day"
+dark_name = "tokyo-night"
 
-[ui]
-agent_panel_sort = "spaces"
+# Notify when an agent finishes or needs attention in a background workspace.
+[ui.toast]
+delivery = "system"
+
+[ui.sound]
+enabled = true
+
+[experimental]
+# macOS IME support: keep the candidate window tracking the cursor inside agent
+# TUIs that paint their own cursor, and make prefix keys work while an IME is on.
+reveal_hidden_cursor_for_cjk_ime = true
+cjk_ime_agents = ["claude", "codex", "cursor", "droid", "amp", "opencode", "copilot", "pi"]
+switch_ascii_input_source_in_prefix = true
+
+[update]
+channel = "stable"
