@@ -10,7 +10,9 @@ close_workspace = "cmd+ctrl+w"
 
 # Tabs
 new_tab = "cmd+ctrl+c"
-switch_tab = "cmd+ctrl+1..9"
+
+# Workspaces
+switch_workspace = "cmd+ctrl+1..9"
 
 # Panes
 split_vertical = "cmd+ctrl+v"
@@ -45,3 +47,6 @@ switch_ascii_input_source_in_prefix = true
 
 [update]
 channel = "stable"
+
+[ui]
+agent_panel_sort = "spaces"
