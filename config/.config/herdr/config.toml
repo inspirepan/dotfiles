@@ -2,7 +2,7 @@ onboarding = false
 
 # Prefix key: kept for help (prefix+?), copy mode, and other auxiliary modes.
 [keys]
-prefix = "ctrl+a"
+prefix = "ctrl+b"
 
 # Workspaces
 new_workspace = "cmd+ctrl+t"
