@@ -9,7 +9,7 @@ new_workspace = "cmd+ctrl+t"
 close_workspace = "cmd+ctrl+w"
 
 # Tabs
-new_tab = "cmd+ctrl+c"
+# new_tab is unbound; workspaces replace tabs in this setup.
 
 # Workspaces
 switch_workspace = "cmd+ctrl+1..9"
@@ -50,6 +50,8 @@ channel = "stable"
 
 [ui]
 agent_panel_sort = "spaces"
+# Single workspace tab: hide the tab row to save a terminal line.
+hide_tab_bar_when_single_tab = true
 
 # Show the Claude conversation title (reported as terminal title) in the agent panel.
 [ui.sidebar.agents]
