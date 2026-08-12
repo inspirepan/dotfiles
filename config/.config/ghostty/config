@@ -59,3 +59,5 @@ background-blur=true
 
 # 按键绑定
 keybind="shift+enter=text:\n"
+# Cmd+K clears the focused pane by sending Ctrl+L (form feed) to the shell.
+keybind="cmd+k=text:\x0c"
