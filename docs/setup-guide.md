@@ -61,6 +61,16 @@ cd ~/code/dotfiles && klaude
 
 ## Phase 1：Homebrew 全量安装
 
+> 如果代理已开启可跳过镜像配置。否则在执行 `brew bundle` 前临时设置国内镜像，避免从官方 `formulae.brew.sh` 下载大 JSON / bottle 卡顿：
+>
+> ```bash
+> export HOMEBREW_API_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api"
+> export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles"
+> export HOMEBREW_AUTO_UPDATE_SECS=86400
+> ```
+>
+> 这些变量已写在 `zsh/.zshrc` 中，Phase 3 stow 后永久生效。
+
 ```bash
 brew bundle --file=~/code/dotfiles/Brewfile
 ```

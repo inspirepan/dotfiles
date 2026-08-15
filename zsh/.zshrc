@@ -38,6 +38,11 @@ path=(
   $path
 )
 
+# Homebrew 镜像（加速国内 update / install，避免每次走官方 formulae.brew.sh）
+export HOMEBREW_API_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api"
+export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles"
+export HOMEBREW_AUTO_UPDATE_SECS=86400
+
 bindkey '^[[Z' autosuggest-accept
 
 # ZOXIDE
