@@ -41,6 +41,7 @@ brew "rust"
 brew "yt-dlp"
 brew "cloudflared"
 brew "duti"
+brew "terminal-notifier"     # Herdr macOS system notifications
 
 # --- Cask：应用 ---
 cask "ghostty"

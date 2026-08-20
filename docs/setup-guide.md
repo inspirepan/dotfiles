@@ -75,7 +75,15 @@ cd ~/code/dotfiles && klaude
 brew bundle --file=~/code/dotfiles/Brewfile
 ```
 
-其中也会安装 `fzf` 和 `neovim`，供 `fb` 做上下键交互选文件并直接进入只读查看。
+其中也会安装 `fzf` 和 `neovim`，供 `fb` 做上下键交互选文件并直接进入只读查看；还会安装
+`terminal-notifier`，供 Herdr 发送可返回终端的 macOS 系统通知。单独安装时使用：
+
+```bash
+brew install terminal-notifier
+```
+
+如果没有 `terminal-notifier`，Herdr 的 `delivery = "system"` 会回退到 `osascript`，通知可能显示为来自
+Script Editor。
 
 以下包需要 sudo 安装 pkg，agent 无法自动执行，需手动在终端运行：
 

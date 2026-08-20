@@ -27,13 +27,14 @@ workspace_picker = "cmd+ctrl+space"
 # Follow the host terminal light/dark appearance and switch the Herdr UI theme.
 # Ghostty is set to light:blue-light,dark:blue-light-dark, so Herdr follows it.
 [theme]
-auto_switch = true
+auto_switch = false
 light_name = "tokyo-night-day"
 dark_name = "tokyo-night"
 
 # Notify when an agent finishes or needs attention in a background workspace.
+name = "tokyo-night-day"
 [ui.toast]
-delivery = "system"
+delivery = "terminal"
 
 [ui.sound]
 enabled = true
@@ -49,7 +50,7 @@ switch_ascii_input_source_in_prefix = true
 channel = "stable"
 
 [ui]
-agent_panel_sort = "spaces"
+agent_panel_sort = "priority"
 # Single workspace tab: hide the tab row to save a terminal line.
 hide_tab_bar_when_single_tab = true
 
