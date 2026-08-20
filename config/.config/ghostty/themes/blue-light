@@ -2,24 +2,24 @@
 # Based on the Blue Light VS Code theme
 
 background = #fcfbf9
-foreground = #444444
+foreground = #333333
 cursor-color = #2C7CCB
 cursor-text = #ededed
 selection-background = #CADDF2
-selection-foreground = #444444
+selection-foreground = #333333
 
 # Normal colors (0-7)
-palette = 0=#555555
+palette = 0=#000000
 palette = 1=#E3194C
 palette = 2=#129769
 palette = 3=#A16900
 palette = 4=#2C7CCB
 palette = 5=#8B5FC7
 palette = 6=#328696
-palette = 7=#d0d0d0
+palette = 7=#bbbbbb
 
 # Bright colors (8-15)
-palette = 8=#888888
+palette = 8=#999999
 palette = 9=#F84D6D
 palette = 10=#4BAF85
 palette = 11=#D28820
