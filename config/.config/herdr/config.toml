@@ -83,3 +83,7 @@ claude = [
   ],
 
 ]
+
+# Spaces only show the workspace name and Git state, not the branch name.
+[ui.sidebar.spaces]
+rows = [["state_icon", "workspace"], ["git_status"]]
