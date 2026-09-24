@@ -2,6 +2,10 @@
 *.secret
 *.local
 
+# Agent credentials and mutable settings are never stowed.
+claude/.claude/settings*.json
+klaude/.klaude/*auth*.json
+
 # jj per-repo configs (machine-specific, contain absolute paths)
 config/.config/jj/repos/
 

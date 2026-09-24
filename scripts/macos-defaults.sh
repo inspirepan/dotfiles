@@ -7,7 +7,7 @@ echo ">>> 正在配置 macOS defaults..."
 
 # --- Dock ---
 # 图标大小（像素）
-defaults write com.apple.dock tilesize -int 58
+defaults write com.apple.dock tilesize -int 51
 # 悬停放大效果
 defaults write com.apple.dock magnification -bool true
 # 放大后最大图标尺寸（默认 128，太大）
@@ -25,8 +25,8 @@ defaults write com.apple.dock mru-spaces -bool false
 # 左下角：调度中心
 defaults write com.apple.dock wvous-bl-corner -int 2
 defaults write com.apple.dock wvous-bl-modifier -int 0
-# 右下角：快速备忘录
-defaults write com.apple.dock wvous-br-corner -int 14
+# Bottom-right hot corner: disabled.
+defaults write com.apple.dock wvous-br-corner -int 1
 defaults write com.apple.dock wvous-br-modifier -int 0
 
 # --- 访达 ---
@@ -86,8 +86,8 @@ defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 64 '
 </dict>'
 
 # --- 台前调度 ---
-# 启用台前调度窗口管理
-defaults write com.apple.WindowManager GloballyEnabled -bool true
+# Keep Stage Manager disabled.
+defaults write com.apple.WindowManager GloballyEnabled -bool false
 
 # --- Spring Loading ---
 # 将文件拖到文件夹上并停留时自动打开文件夹

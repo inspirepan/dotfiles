@@ -67,6 +67,11 @@ eval "$(ruby ~/.local/try.rb init ~/code/try)"
 # bun 补全
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
+# Optional Otty integration, enabled only inside Otty.
+if [[ -n "$OTTY_SHELL_INTEGRATION" && -r "$OTTY_SHELL_INTEGRATION/otty-integration.zsh" ]]; then
+  source "$OTTY_SHELL_INTEGRATION/otty-integration.zsh"
+fi
+
 # Anthropic
 export DISABLE_TELEMETRY=1
 

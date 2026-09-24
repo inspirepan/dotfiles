@@ -42,6 +42,9 @@ brew "yt-dlp"
 brew "cloudflared"
 brew "duti"
 brew "terminal-notifier"     # Herdr macOS system notifications
+brew "poppler"               # PDF inspection and rendering
+brew "summarize"             # Summarize URLs and local files
+brew "mole"                  # macOS maintenance
 
 # --- Cask：应用 ---
 cask "ghostty"
@@ -60,6 +63,9 @@ cask "libreoffice"
 cask "stats"
 
 # --- Cask：字体 ---
+cask "font-paper-mono"
+cask "font-stix-two-math"
+cask "font-noto-serif-cjk-sc"
 cask "font-geist"
 cask "font-geist-mono"
 cask "font-commit-mono"

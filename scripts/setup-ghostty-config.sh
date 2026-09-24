@@ -5,21 +5,29 @@ set -euo pipefail
 DOTFILES="$(cd "$(dirname "$0")/.." && pwd)"
 SOURCE="$DOTFILES/config/.config/ghostty/config"
 TARGET_DIR="$HOME/Library/Application Support/com.mitchellh.ghostty"
-TARGET="$TARGET_DIR/config"
 
-mkdir -p "$TARGET_DIR"
-
-if [[ -L "$TARGET" && "$(readlink "$TARGET")" == "$SOURCE" ]]; then
-  echo ">>> Ghostty config already linked"
-  exit 0
+if [[ ! -f "$SOURCE" ]]; then
+  echo ">>> Ghostty source config not found: $SOURCE" >&2
+  exit 1
 fi
 
-if [[ -e "$TARGET" || -L "$TARGET" ]]; then
-  BACKUP_DIR="$HOME/.dotfiles-migration-backup-$(date +%Y%m%d-%H%M%S)/Library/Application Support/com.mitchellh.ghostty"
-  mkdir -p "$BACKUP_DIR"
-  mv "$TARGET" "$BACKUP_DIR/config"
-  echo ">>> Backed up existing Ghostty config to $BACKUP_DIR/config"
+# Support both the current filename and pre-1.2.3 Ghostty releases.
+TARGETS=("$TARGET_DIR/config" "$TARGET_DIR/config.ghostty")
+if [[ -e "$HOME/.config/ghostty/config.ghostty" || -L "$HOME/.config/ghostty/config.ghostty" ]]; then
+  TARGETS+=("$HOME/.config/ghostty/config.ghostty")
 fi
 
-ln -sfn "$SOURCE" "$TARGET"
-echo ">>> Linked Ghostty config to $SOURCE"
+for TARGET in "${TARGETS[@]}"; do
+  mkdir -p "$(dirname "$TARGET")"
+  if [[ -L "$TARGET" && "$(readlink "$TARGET")" == "$SOURCE" ]]; then
+    echo ">>> Ghostty config already linked: $TARGET"
+    continue
+  fi
+  if [[ -e "$TARGET" || -L "$TARGET" ]]; then
+    BACKUP_DIR="$(mktemp -d "$HOME/.dotfiles-migration-backup.XXXXXXXX")"
+    mv "$TARGET" "$BACKUP_DIR/$(basename "$TARGET")"
+    echo ">>> Backed up existing Ghostty config to $BACKUP_DIR"
+  fi
+  ln -s "$SOURCE" "$TARGET"
+  echo ">>> Linked $TARGET to $SOURCE"
+done

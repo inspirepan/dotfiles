@@ -4,12 +4,13 @@
 
 ## 目录结构
 
-- `zsh/`, `git/`, `ssh/`, `config/`, `claude/` -- stow 包，目录结构镜像 `$HOME`。执行 `cd ~/code/dotfiles && stow --no-folding -t ~ zsh git config ssh claude` 创建 symlink。Ghostty 自定义主题在 `config/.config/ghostty/themes/` 中。
-- `omz-custom/` -- oh-my-zsh 自定义主题 (`jj.zsh-theme`)，由 `scripts/setup-omz.sh` 复制到 `~/.oh-my-zsh/custom/themes/`。
+- `zsh/`, `git/`, `ssh/`, `config/`, `claude/`, `klaude/` -- stow 包，目录结构镜像 `$HOME`。执行 `cd ~/code/dotfiles && stow --no-folding -t ~ zsh git config ssh claude klaude` 创建 symlink。Ghostty 自定义主题在 `config/.config/ghostty/themes/` 中。
+- `omz-custom/` -- oh-my-zsh 自定义主题 (`jj.zsh-theme`)，由 `scripts/setup-omz.sh` 链接到 `~/.oh-my-zsh/custom/themes/`。
 - `themes/` -- 自定义主题。`themes/vscode-blue-light/` 存放 VSCode 主题源文件和 vsix。
 - `Brewfile` -- 所有 Homebrew formulae、cask 和字体。
 - `skills/` -- 本地 agent skills（如 commit），由 `scripts/setup-skills.sh` 链接到 `~/.agents/skills/`。
 - `Skillfile` -- 远程 agent skills 清单（GitHub 来源），类似 Brewfile。
+- `templates/` -- 需要合并到本机文件的配置片段，不直接 stow；目前包含 Claude Code 的无凭证设置。
 - `scripts/` -- 辅助脚本（oh-my-zsh 安装、macOS 系统设置、skills 安装）。
 - `docs/` -- 安装指南和参考笔记。
 
@@ -30,5 +31,6 @@
 
 - 配置文件放 stow 包里，文档和手动步骤放 `docs/`。
 - 密钥、API key、token 不入库。放在 `~/.zshenv.secret`（被 `.zshrc` source）。
+- Agent 配置仅维护 Klaude 和 Claude Code；Claude 的 `settings.json` 与生成 hook 不入库，Klaude 仅维护无凭证配置，认证文件不入库。
 - 新增配置时同步更新 `docs/setup-guide.md`。
 - VSCode 配置由其自带的 Settings Sync 管理，不在这里维护。

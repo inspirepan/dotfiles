@@ -9,8 +9,11 @@
 ```bash
 cd ~/code/dotfiles
 brew install stow
-stow --no-folding -t ~ zsh git config ssh claude
+stow --no-folding -t ~ zsh git config ssh claude klaude
 ```
+
+已有同名普通文件时先按 setup guide 备份和处理冲突，不要直接覆盖。Claude 的 `settings.json` 从
+`templates/claude-settings.json` 合并；不会通过 Stow 替换登录状态或权限设置。
 
 ## 目录结构
 
@@ -22,6 +25,8 @@ dotfiles/
   config/.config/           # ghostty、jj、karabiner、ripgrep、zed 等
   ssh/                      # SSH 配置
   claude/.claude/           # Claude Code 全局 CLAUDE.md、statusline
+  klaude/.klaude/           # Klaude 模型选择与 provider 开关，无凭证
+  templates/                # Claude Code 等配置的合并片段
   omz-custom/               # 自定义 oh-my-zsh 主题（jj.zsh-theme）
   themes/                   # 自定义主题（VSCode、Ghostty）
   skills/                   # Claude Code / klaude 的 agent skills
@@ -92,7 +97,7 @@ dotfiles/
 - 访达：显示路径栏和状态栏、默认搜索当前文件夹
 - 键盘：F 键用作标准功能键、关闭自动大写/句号/智能引号/拼写纠正
 - Spotlight：禁用 Cmd+Space（让给 Raycast）
-- 台前调度：启用
+- 台前调度：关闭
 - 文件关联：常见代码文件默认用 VSCode 打开（通过 `duti`）
 
 ### 代理 + Tunnel 共存

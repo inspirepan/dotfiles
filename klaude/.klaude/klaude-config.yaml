@@ -1,0 +1,23 @@
+main_model:
+- gpt-6.1-sol@youtu-openai
+- deepseek-flash:high@opencode-go
+fast_model: gpt-6-luna@youtu-openai
+sub_agent_models:
+  finder: gpt-6-luna@youtu-openai
+  code-reviewer: gpt-6.1-sol@youtu-openai
+  code-maintenance-reviewer: gpt-6.1-sol@youtu-openai
+provider_list:
+- provider_name: aws-bedrock
+  disabled: true
+- provider_name: openai
+  disabled: true
+- provider_name: google
+  disabled: true
+- provider_name: moonshot-cn
+  disabled: true
+- provider_name: moonshot-ai
+  disabled: true
+- provider_name: minimax
+  disabled: true
+- provider_name: opencode-go
+  disabled: false
