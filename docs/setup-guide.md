@@ -112,7 +112,7 @@ brew install --cask font-sf-pro         # Apple 字体
 
 ```bash
 cd ~/code/dotfiles
-stow --no-folding -t ~ zsh git config ssh
+stow --no-folding -t ~ zsh git config ssh claude
 ```
 
 这会创建以下符号链接：
@@ -133,6 +133,13 @@ stow --no-folding -t ~ zsh git config ssh
 - `~/.config/karabiner/karabiner.json` -> `dotfiles/config/.config/karabiner/karabiner.json`
 - `~/.config/git/ignore` -> `dotfiles/config/.config/git/ignore`
 - `~/.ssh/config` -> `dotfiles/ssh/.ssh/config`
+- `~/.claude/statusline.sh` -> `dotfiles/claude/.claude/statusline.sh`
+
+Claude Code 的 `settings.json` 不入库（会被 Claude Code 频繁改写）。statusline 需要手动在 `~/.claude/settings.json` 中加：
+
+```json
+"statusLine": { "type": "command", "command": "~/.claude/statusline.sh" }
+```
 
 安装 Ghostty terminfo（让其他设备 SSH 进来时终端渲染正常）：
 
