@@ -69,7 +69,7 @@
       "milliseconds": 500,
     },
   },
-  "buffer_font_family": "CommitMono",
+  "buffer_font_family": "Paper Mono",
   "colorize_brackets": false,
   "auto_indent_on_paste": true,
   "show_whitespaces": "trailing",
