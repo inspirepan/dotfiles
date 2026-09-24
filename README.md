@@ -21,7 +21,7 @@ dotfiles/
   git/                      # .gitconfig（含条件 include）
   config/.config/           # ghostty、jj、karabiner、ripgrep、zed 等
   ssh/                      # SSH 配置
-  claude/.claude/           # Claude Code statusline
+  claude/.claude/           # Claude Code 全局 CLAUDE.md、statusline
   omz-custom/               # 自定义 oh-my-zsh 主题（jj.zsh-theme）
   themes/                   # 自定义主题（VSCode、Ghostty）
   skills/                   # Claude Code / klaude 的 agent skills

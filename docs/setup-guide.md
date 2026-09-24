@@ -134,6 +134,7 @@ stow --no-folding -t ~ zsh git config ssh claude
 - `~/.config/git/ignore` -> `dotfiles/config/.config/git/ignore`
 - `~/.ssh/config` -> `dotfiles/ssh/.ssh/config`
 - `~/.claude/statusline.sh` -> `dotfiles/claude/.claude/statusline.sh`
+- `~/.claude/CLAUDE.md` -> `dotfiles/claude/.claude/CLAUDE.md`
 
 Claude Code 的 `settings.json` 不入库（会被 Claude Code 频繁改写）。statusline 需要手动在 `~/.claude/settings.json` 中加：
 
