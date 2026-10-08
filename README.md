@@ -30,6 +30,7 @@ dotfiles/
   omz-custom/               # 自定义 oh-my-zsh 主题（jj.zsh-theme）
   themes/                   # 自定义主题（VSCode、Ghostty）
   skills/                   # Claude Code / klaude 的 agent skills
+  Skillfile                 # npx skills 远程来源与 skill 名称清单
   scripts/                  # 初始化脚本
   docs/                     # 设置指南、代理笔记、字体清单
 ```
@@ -66,6 +67,9 @@ dotfiles/
 **自定义 zsh 提示符**（`omz-custom/themes/jj.zsh-theme`）：两行提示符，优先检测 jj 仓库（回退到 git），显示 change id、描述、diff 统计、距 trunk 的 commit 数、冲突/空提交标记、活动 bookmark。还会显示 agent 上下文（CLAUDE.md、skills 数量）。
 
 **Commit skill**（`skills/commit/`）：一个 Claude Code / klaude 的 [agent skill](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/claude-code-skills)，自动执行 `jj describe` / `jj split`，生成 Conventional Commit 格式的提交信息。它会检查工作区状态，推断出一个内聚的提交边界，干净地拆分变更。
+
+远程 skills 在 `Skillfile` 中声明，由 `scripts/setup-skills.sh` 调用 `npx skills` 安装 / 刷新，
+只安装给 Claude Code，并通过共享目录链接供 Klaude 读取。本地 `commit` 始终链接仓库版本。
 
 ### Karabiner 按键映射
 

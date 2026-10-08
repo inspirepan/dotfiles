@@ -1,10 +1,10 @@
 # Agent Skills
-# Format: github_repo skill_path local_name
+# Format: github_repo skill_name (SKILL.md frontmatter name)
 
 # Emil Kowalski - UI design engineering philosophy
-emilkowalski/skill skills/emil-design-eng emil-design-eng
+emilkowalski/skill emil-design-eng
 
-vercel-labs/skills skills/find-skills find-skills
-vercel-labs/agent-skills skills/react-best-practices vercel-react-best-practices
-jakubkrehel/make-interfaces-feel-better skills/make-interfaces-feel-better make-interfaces-feel-better
-nutlope/hallmark skills/hallmark hallmark
+vercel-labs/skills find-skills
+vercel-labs/agent-skills vercel-react-best-practices
+jakubkrehel/make-interfaces-feel-better make-interfaces-feel-better
+nutlope/hallmark hallmark

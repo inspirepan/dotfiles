@@ -300,16 +300,34 @@ vsce package
 ~/code/dotfiles/scripts/setup-skills.sh
 ```
 
-这会从 `Skillfile` 安装远程 skill，并从 dotfiles 链接本地 skill（如 commit）到 `~/.agents/skills/`。
-脚本同时为清单中的 skills 创建 `~/.claude/skills/` 链接，避免 Claude 的旧副本覆盖仓库版本。
-已有冲突文件或目录先备份到 `~/.local/state/dotfiles/skills-backups/`，可恢复；不会整目录替换 Claude skills。
-远程 skill 默认存在就跳过。主动更新时运行：
+`Skillfile` 每行是 `github_repo skill_name`，名称取自远程 `SKILL.md` 的 frontmatter，而不是仓库目录名。
+脚本调用 `npx --yes skills add <repo> --skill <name> --global --agent claude-code --yes --json`，
+由 Skills CLI 负责发现、下载和记录来源，不再自己克隆 / 复制远程内容。Node.js 已在 Phase 1 安装，
+无需全局安装 `skills` npm 包。
+
+`--json` 使安装失败返回非零退出码，避免 CLI 普通输出模式把失败当作成功；stdin 与清单读取隔离。
+
+CLI 只安装到 Claude Code：当前单 agent 安装会复制到 `~/.claude/skills/`，脚本再从
+`~/.agents/skills/` 链接到这份内容供 Klaude 读取，不创建其他 agent 的链接。
+若 CLI 使用共享目录加 Claude 链接的安装方式，脚本也会保留已指向同一份内容的路径。
+本地 skill（如 commit）继续链接仓库版本，不由 Skills CLI 安装或更新；不会改动 Klaude 的 `.system`。
+
+每次运行都安装 / 刷新清单里的远程 skills，也会补齐原先手动复制的 skill 的来源记录。
+已有远程内容和安装记录先复制备份到 `~/.local/state/dotfiles/skills-backups/`；本地链接冲突会先移动到备份。
+失败时脚本停止，备份保留供恢复；不承诺 Skills CLI 中途写入失败时自动回滚。
+主动刷新使用同一个命令（旧 `--update` 参数仍作为别名接受）：
 
 ```bash
-~/code/dotfiles/scripts/setup-skills.sh --update
+~/code/dotfiles/scripts/setup-skills.sh
 ```
 
-更新按远程默认分支获取最新版本，先下载并验证，再备份旧副本；清单不锁定版本。
+`~/.agents/.skill-lock.json` 由 CLI 自动维护来源、路径、内容 hash 和安装时间；它是本机安装记录，
+不纳入 Stow，也不是固定版本的锁文件。新机器从 `Skillfile` 重装，清单不锁定远程内容版本。
+可用 `npx --yes skills list -g -a claude-code` 检查安装结果。
+
+不要用无 agent 限制的 `npx skills add` 或 `--all`。
+当前 Skills CLI 1.7.1 的 `update -g` 会重新检测 agent，且不支持 `--agent` 过滤；
+本仓库用限定 Claude 的 `add` 刷新，避免更新时给其他 agent 建链接。
 
 ## Phase 7：密钥（补充）
 
