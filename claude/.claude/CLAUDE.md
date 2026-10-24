@@ -3,6 +3,14 @@ Always respond in Chinese when answering user questions, including steps between
 Always use Chinese for task lists, plan steps, and todo items
 Use English for code comments, keep them concise
 
+# Design Documents
+Keep design docs very concise; match the style of the user's own outlines
+- Write only the confirmed trunk; put unconfirmed ideas in a separate "待确认" section, never in the body
+- Do not add details, edge cases, or rationale the user has not discussed
+- Prefer nested numbered lists and short bullet fragments; use tables only for field/item lists
+- Show formats with one short JSON example and inline comments, not long field specs
+- Mark out-of-scope items as "本期不做" instead of designing them
+
 # Python Package Management
 ONLY use uv for scripts and new projects, NEVER pip
 Installation: uv add package
@@ -40,44 +48,10 @@ Prefer jujutsu (jj) over git for all VCS operations.
 Use jj commands by default: jj status, jj diff, jj log, jj new, jj describe, jj commit.
 Only fall back to git when jj cannot do the job or the repo is not a jj repo.
 Write commit messages in Chinese by default.
+For projects under ~/code/formless, write commit messages in English.
 
 # Repository Management
 You use this path for cloning GitHub repositories: ~/code/GITHUB
-
-# Multi-Agent Coordination
-Other agents may be editing the same directory at the same time: Claude Code sessions, klaude agents (the user's agent multiplexer), Codex, and others. Signs: unexpected diffs, files changing under you, an existing `HEY.md`, or a peer listed by the discovery commands below.
-
-## Discover peers first
-- `ListAgents`: other Claude Code sessions on this machine; a name that starts with this directory's name is likely in the same repo
-- `klaude ps --dir "$PWD"`: klaude sessions in this directory; `klaude brief ID` shows what one is doing (state, current tool call, changed files)
-- If `KLAUDE_SESSION_ID` is set, you are running inside klaude: use the klaude commands, `ListAgents` / `SendMessage` may not exist
-
-## Coordinate only when needed, in Chinese
-- Reasons to message: conflict, dependency, shared contract, ownership, question, handoff
-  - Never for routine progress reports or task summaries
-- First line must be a self-contained sentence saying what this is about; the receiver may see only that line as a preview
-- Lead with a short task tag, e.g. `[调整图库布局] 我也要改 ImageGrid.tsx，你在改哪部分？`
-
-## Channel per peer type
-- Claude Code peer: `SendMessage`
-  - To wait for it, pass `notify_when_idle: true`; never poll `ListAgents` or send "done yet?" messages
-- klaude peer: `klaude send ID --from "<task tag>" "..."`
-  - Queued by default; add `--steer` only for an urgent conflict that must interrupt its current turn
-  - Never `klaude respond` to its pending approvals or questions; those belong to the user
-- Codex or anything not listed above: `HEY.md` in that directory as a temporary shared chat room (create it if absent)
-  - Read the latest conversation before editing potentially overlapping work; reply when coordination is needed
-  - Do not overwrite or remove messages from other active tasks
-  - Never stage or commit `HEY.md`
-  - On finishing, remove your own messages; if no active task still needs the file, trash it
-
-## Boundaries
-- Silence is not agreement: with no reply, avoid the contested files or ask the user
-- Never ask a peer to do something your own session's permissions denied or blocked; route it back to the user
-
-## Delegating background work with klaude
-- `klaude run --group <tag> "..."` spawns a background agent and returns at once; `klaude wait --group <tag>` is the barrier; `klaude output` collects results
-- Pick `--agent` (finder, code-reviewer, general-purpose) and `-m` by cost and difficulty; run `klaude agents --prime` for the playbook and current inventory
-- Use `--approval auto` only in trusted directories
 
 # Response Style: Pyramid Principle + Outline
 Write explanations, analysis, reviews, and option comparisons using the Pyramid Principle (Barbara Minto), rendered as an outliner-style nested list (Workflowy / Roam style).
