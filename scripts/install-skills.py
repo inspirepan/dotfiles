@@ -9,7 +9,9 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 import subprocess
+import tempfile
 
 
 def sources(config):
@@ -42,6 +44,17 @@ def load_config(repository):
     return config
 
 
+def legacy_commit(repository, source, name, canonical, client):
+    target = (repository / "skills/commit").resolve()
+    return (
+        name == "commit"
+        and source["repository"] == "inspirepan/agent-skills"
+        and canonical.is_symlink()
+        and canonical.resolve() == target
+        and (not os.path.lexists(client) or (client.is_symlink() and client.resolve() == target))
+    )
+
+
 def plan(repository, home):
     config = load_config(repository)
     state_home = os.environ.get("XDG_STATE_HOME")
@@ -55,6 +68,9 @@ def plan(repository, home):
             canonical, client = shared / name, claude / name
             record = lock.get(name, {})
             owned = record.get("source") in [source["repository"], *source.get("replaces", [])]
+            if (not record or owned) and legacy_commit(repository, source, name, canonical, client):
+                pending.append(name)
+                continue
             foreign_client = os.path.lexists(client) and not (
                 canonical.exists() and client.is_symlink() and client.resolve() == canonical.resolve()
             )
@@ -81,6 +97,17 @@ def install(repository, home, check=False, update=False):
         print(f"待安装／更新 [{source['repository']}]：" + ", ".join(selected), flush=True)
         if check:
             continue
+        for name in selected:
+            canonical = home / ".agents/skills" / name
+            client = Path(os.environ.get("CLAUDE_CONFIG_DIR", str(home / ".claude"))).expanduser() / "skills" / name
+            if legacy_commit(repository, source, name, canonical, client):
+                backups = home / ".local/state/dotfiles/backups"
+                backups.mkdir(parents=True, exist_ok=True)
+                backup = Path(tempfile.mkdtemp(prefix="legacy-commit-", dir=backups))
+                if client.is_symlink():
+                    shutil.move(str(client), backup / "claude-link")
+                shutil.move(str(canonical), backup / "shared-link")
+                print(f"旧 commit 入口已备份：{backup}", flush=True)
         command = ["npx", "--yes", "skills@latest", "add", source["repository"], "--global", "--agent", "codex", "claude-code", "--skill", *selected, "--yes", "--json"]
         result = subprocess.run(command, env={**os.environ, "HOME": str(home), "DO_NOT_TRACK": "1"}, capture_output=True, text=True)
         if result.returncode:

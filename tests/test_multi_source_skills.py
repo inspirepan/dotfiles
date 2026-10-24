@@ -117,6 +117,92 @@ class MultiSourceTests(unittest.TestCase):
             self.assertEqual(installer.install(self.repo, self.home, update=True), 2)
         self.assertEqual((target / 'SKILL.md').read_text(), 'personal')
 
+    def test_legacy_commit_links_migrate_even_without_source_content(self):
+        self.config = {'version': 1, 'repository': 'inspirepan/agent-skills', 'enabled': ['commit']}
+        self.save()
+        canonical = self.home / '.agents/skills/commit'
+        client = self.home / '.claude/skills/commit'
+        canonical.parent.mkdir(parents=True)
+        client.parent.mkdir(parents=True)
+        target = self.repo / 'skills/commit'
+        for has_content, has_client in [(True, True), (False, True), (False, False)]:
+            with self.subTest(has_content=has_content, has_client=has_client):
+                if has_content:
+                    target.mkdir(parents=True)
+                    (target / 'SKILL.md').write_text('original')
+                canonical.symlink_to(target)
+                if has_client:
+                    client.symlink_to(canonical)
+                self.assertEqual(installer.plan(self.repo, self.home)[1:], (['commit'], []))
+                backups = self.home / '.local/state/dotfiles/backups'
+                before = set(backups.iterdir()) if backups.exists() else set()
+                lock_before = self.lock.read_bytes() if self.lock.exists() else None
+                with patch.object(installer.subprocess, 'run') as run, contextlib.redirect_stdout(io.StringIO()):
+                    self.assertEqual(installer.install(self.repo, self.home, check=True), 0)
+                run.assert_not_called()
+                self.assertTrue(canonical.is_symlink())
+                self.assertEqual(client.is_symlink(), has_client)
+                self.assertEqual(set(backups.iterdir()) if backups.exists() else set(), before)
+                self.assertEqual(self.lock.read_bytes() if self.lock.exists() else None, lock_before)
+                def cli_run(command, **kwargs):
+                    self.assertFalse(os.path.lexists(canonical))
+                    self.assertFalse(os.path.lexists(client))
+                    self.installed('commit', 'inspirepan/agent-skills')
+                    return type('Result', (), {'returncode': 0})()
+                output = io.StringIO()
+                with patch.object(installer.subprocess, 'run', side_effect=cli_run), contextlib.redirect_stdout(output):
+                    self.assertEqual(installer.install(self.repo, self.home), 0)
+                backup, = set(backups.iterdir()) - before
+                self.assertIn(str(backup), output.getvalue())
+                self.assertEqual(os.readlink(backup / 'shared-link'), str(target))
+                self.assertEqual((backup / 'claude-link').is_symlink(), has_client)
+                self.assertEqual(installer.plan(self.repo, self.home)[1:], ([], []))
+                # Reset only the isolated CLI fixture for the next case.
+                client.unlink()
+                (canonical / 'SKILL.md').unlink()
+                canonical.rmdir()
+                self.lock.write_text('{"skills": {}}')
+                if has_content:
+                    self.assertEqual((target / 'SKILL.md').read_text(), 'original')
+                    (target / 'SKILL.md').unlink()
+                    target.rmdir()
+
+    def test_legacy_commit_exception_does_not_take_over_personal_content(self):
+        self.config = {'version': 1, 'repository': 'inspirepan/agent-skills', 'enabled': ['commit']}
+        self.save()
+        canonical = self.home / '.agents/skills/commit'
+        client = self.home / '.claude/skills/commit'
+        canonical.parent.mkdir(parents=True)
+        client.parent.mkdir(parents=True)
+        for case in ['directory', 'other-link', 'client-directory', 'client-link', 'foreign-lock', 'other-source']:
+            with self.subTest(case=case):
+                if case == 'directory':
+                    canonical.mkdir()
+                else:
+                    canonical.symlink_to(self.home / 'elsewhere' if case == 'other-link' else self.repo / 'skills/commit')
+                if case == 'client-directory':
+                    client.mkdir()
+                elif case == 'client-link':
+                    client.symlink_to(self.home / 'elsewhere')
+                if case == 'foreign-lock':
+                    self.lock.write_text('{"skills": {"commit": {"source": "someone/else"}}}')
+                self.config['repository'] = 'someone/else' if case == 'other-source' else 'inspirepan/agent-skills'
+                self.save()
+                with patch.object(installer.subprocess, 'run') as run, contextlib.redirect_stdout(io.StringIO()):
+                    self.assertEqual(installer.install(self.repo, self.home, update=True), 2)
+                run.assert_not_called()
+                self.assertTrue(os.path.lexists(canonical))
+                self.assertFalse((self.home / '.local').exists())
+                if canonical.is_symlink():
+                    canonical.unlink()
+                else:
+                    canonical.rmdir()
+                if client.is_symlink():
+                    client.unlink()
+                elif client.exists():
+                    client.rmdir()
+                self.lock.write_text('{"skills": {}}')
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -88,10 +88,11 @@ npx skills add emilkowalski/skills -g -a codex claude-code -s emil-design-eng an
 - `scripts/setup-skills.sh` 默认补齐缺项、迁移已声明来源并解除旧 SHA ref；`--update` 刷新全部无冲突启用项；`--check` 只读检查本地来源与布局，不承诺已是上游最新。
 - 日常更新运行 `npx skills update -g -y`；有迁移来源或新增启用项时运行 `scripts/setup-skills.sh --update`。
 - 独立个人内容不会自动接管。未登记的旧目录先比较，再备份并切换；本机 Emil 的旧目录已按用户确认备份。
-- 历史 `skills/`（含 `skills/commit/SKILL.md`）保留，不由同步器自动接管；不在 dotfiles 新增技能正文。
+- `commit` 由自有来源 `inspirepan/agent-skills` 安装，dotfiles 不再保留其重复正文；清单共 9 项自有、25 项第三方。
+- 仅已知旧 commit 共享 symlink 精确解析到当前仓库 `skills/commit`（允许悬空）、Claude 入口缺失或 symlink 解析到同一目标，且无外来锁归属时，才先移动链接到 `~/.local/state/dotfiles/backups/` 唯一目录再安装；备份路径会打印。独立个人内容保留，`--check` 只读。
 
 ## 清单只维护来源与启用项，不锁提交
 
 - 自有来源使用顶层 `repository`、`enabled`；第三方来源使用 `sources` 列表中的相同字段，不再维护 `revision`。
 - 同名技能不重复启用；`replaces` 仅声明允许迁移的原仓库，不授权接管无来源记录的个人目录。
-- 新增设备配置变化时新增更新步骤，不改写已发布步骤；005 承载解除旧提交锁定。上游内容升级不需要新增设备步骤。
+- 新增设备配置变化时新增更新步骤，不改写已发布步骤；005 承载解除旧提交锁定，006 承载 commit 启用。上游内容升级不需要新增设备步骤。

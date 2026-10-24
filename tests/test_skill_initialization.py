@@ -41,6 +41,9 @@ class InitializationTests(unittest.TestCase):
             sources = installer.sources(config)
             by_repository = {s['repository']: s for s in sources}
             names = {name for source in sources for name in source['enabled']}
+            self.assertEqual(len(config['enabled']), 9)
+            self.assertIn('commit', config['enabled'])
+            self.assertEqual(len(names), 34)
             calls = []
             original_run = subprocess.run
             def run(command, **kwargs):

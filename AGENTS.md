@@ -8,7 +8,7 @@
 - `omz-custom/` -- oh-my-zsh 自定义主题 (`jj.zsh-theme`)，由 `scripts/setup-omz.sh` 链接到 `~/.oh-my-zsh/custom/themes/`。
 - `themes/` -- 自定义主题。`themes/vscode-blue-light/` 存放 VSCode 主题源文件和 vsix。
 - `Brewfile` -- 所有 Homebrew formulae、cask 和字体。
-- `skills/` -- 历史个人技能源码；已有安装不由新同步器自动接管或覆盖。自写和持续改写的技能在 `agent-skills` 维护；第三方技能直接从上游安装。
+- 技能正文不在 dotfiles 维护；原 `skills/commit` 迁入 `inspirepan/agent-skills`，第三方技能直接从上游安装。除已知旧 commit 链接外，已有个人安装不自动接管或覆盖。
 - `Skillfile.json` -- 自有与第三方来源、启用列表和来源迁移声明，不锁提交；由 `scripts/setup-skills.sh` 调用最新版 Vercel Skills CLI 安装给 Codex / Claude Code，klaude 读取共享目录。
 - `templates/` -- 需要合并到本机文件的配置片段，不直接 stow；目前包含 Claude Code 的无凭证设置。
 - `scripts/` -- 辅助脚本（oh-my-zsh 安装、macOS 系统设置、skills 安装）。
@@ -40,7 +40,7 @@
 
 ## 共享技能与设备更新
 
-- 自写／改写技能正文在 `inspirepan/agent-skills`；第三方正文只在上游。全部技能统一由 `npx skills` 安装更新，跟上游最新版；dotfiles 不存新技能正文、不锁提交，历史 `skills/` 保留。
+- 自写／改写技能正文在 `inspirepan/agent-skills`（含 commit）；第三方正文只在上游。9 项自有与 25 项第三方统一由 `npx skills` 安装更新，跟上游最新版；dotfiles 只维护来源和启用项，不存技能正文、不锁提交。
 - `scripts/setup-skills.sh --check` 仅检查本地来源、布局和旧 SHA ref，不联网承诺已是最新；已有个人内容保留并返回 2，不得将冲突标为已完成。
 - 日常升级运行 `npx skills update -g -y`；新增启用项或迁移来源运行 `scripts/setup-skills.sh --update`。`dotfiles update` 只应用设备步骤，不强制刷新已完成项。
 - 新设备按安装指南运行 `scripts/dotfiles.sh init`；已有设备拉取后运行 `status` 和 `update`。
@@ -49,4 +49,5 @@
 - 验证：`uv run --no-project python -m unittest discover -s tests -v`。
 
 - 同名技能只能启用一个来源；明确切换来源时使用 `replaces` 声明原仓库，只有原生锁中归属一致的普通安装目录可迁移；独立个人内容保持冲突。
+- 唯一旧链接例外：commit 的共享 symlink 精确解析到当前仓库 `skills/commit`（允许悬空），Claude 入口缺失或 symlink 解析到同一目标，且没有外来锁归属时，安装器先移动链接到 `~/.local/state/dotfiles/backups/` 再安装。006 承载启用，001..005 不改写；`--check` 不备份、不写入。
 - 第三方通用能力优先使用 Anthropic 官方源；用户点名的 Emil、Jakub 前端技能保留作者上游。Emil 当前只启用四项，具体列表以清单为准。

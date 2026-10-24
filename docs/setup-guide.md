@@ -317,7 +317,7 @@ vsce package
 
 第三方技能用途与来源见 [第三方技能目录](third-party-skills.md)。旧清单、Jakub better 系列、精简后的 Emil 四项均已纳入初始化和增量更新，直接从上游安装。
 
-`inspirepan/agent-skills` 只维护自写和持续改写的技能；第三方正文保留在各自上游。`Skillfile.json` 的顶层记录自有来源，`sources` 记录第三方来源；只维护来源、启用列表与 `replaces`，不锁提交。全部技能统一通过最新版 Vercel Skills CLI 跟上游更新，下载、共享目录、Agent 链接与安装记录均由 CLI 管理。dotfiles 不存新技能正文；历史 `skills/` 保留。第三方通用能力优先使用 Anthropic 官方源。
+`inspirepan/agent-skills` 只维护自写和持续改写的技能（含 `commit`）；第三方正文保留在各自上游。`Skillfile.json` 的顶层记录 9 项自有技能，`sources` 记录 25 项第三方技能；只维护来源、启用列表与 `replaces`，不锁提交。全部 34 项统一通过最新版 Vercel Skills CLI 跟上游更新，下载、共享目录、Agent 链接与安装记录均由 CLI 管理。commit 正文迁出后，dotfiles 不再存技能正文。第三方通用能力优先使用 Anthropic 官方源。
 
 ```bash
 ~/code/dotfiles/scripts/setup-skills.sh --check
@@ -331,8 +331,9 @@ npx skills update -g -y
 - Codex / klaude 读取 `~/.agents/skills/`；Claude Code 使用 CLI 建立的链接。
 - 安装调用 `npx --yes skills@latest add <owner/repo> --global --agent codex claude-code --skill <启用项> --yes --json`。
 - 同步前检查已有目录与原生 `.skill-lock.json`；同名个人目录、独立 Claude 内容、断链保留，退出码 2，阻止增量步骤登记完成。
+- 唯一旧链接例外是 `commit`：共享入口必须是精确解析到当前仓库 `skills/commit` 的 symlink，Claude 入口缺失或 symlink 解析到同一目标，且无外来锁归属。即使正文已随拉取删除也可迁移；安装前用 `shutil.move` 备份链接到 `~/.local/state/dotfiles/backups/` 唯一目录并打印路径，不删除个人内容。备份链接不包含正文；正文由上游维护。
 - 默认补齐缺项、迁移来源并解除旧 SHA ref；`--update` 即使已安装也刷新全部无冲突启用项。明确切换来源时用 `replaces` 声明原仓库，未登记或独立个人内容仍保留并报冲突。
-- `--check` 只读检查本地来源、布局与旧 SHA ref；不联网检查上游是否有更新。`dotfiles update` 只应用设备步骤，已完成步骤不因上游发布而强制重跑；005 承载本次解除锁定变化。
+- `--check` 只读检查本地来源、布局与旧 SHA ref；不联网检查上游是否有更新，也不迁移旧链接。`dotfiles update` 只应用设备步骤，已完成步骤不因上游发布而强制重跑；005 承载解除锁定，006 承载 commit 启用，001..005 不改写。
 - 不直接编辑已安装副本；自有技能修改上游源码，日常统一运行 `npx skills update -g -y`，不再修改 SHA。
 - 从启用列表移除不会删除已安装技能；确需卸载时用 `npx skills remove` 明确选择技能与 Agent。
 - klaude 不再打包或自动安装技能；旧隐藏目录保留但不再发现。
