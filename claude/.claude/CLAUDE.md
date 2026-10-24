@@ -11,6 +11,17 @@ Keep design docs very concise; match the style of the user's own outlines
 - Show formats with one short JSON example and inline comments, not long field specs
 - Mark out-of-scope items as "本期不做" instead of designing them
 
+# Context and Task Documents
+- Distinguish observed implementation facts, proposed solutions, and user-confirmed decisions. Label unverified inferences.
+- Use source and tests as evidence for current behavior; a ticket's requested behavior is not proof of what exists.
+- For multi-stage or cross-session tasks, reuse the project's task documents. If no convention exists, use docs/tasks/<task-slug>/. Simple edits do not need task documents.
+- On resumption, read the current phase and the decisions it depends on, then retrieve background as needed. Do not load the entire task archive by default.
+- The user's latest explicit direction controls the task. A current confirmed outline refines the design, and the design refines the original request. New drafts and unresolved suggestions do not override confirmed decisions.
+- Update the relevant document sections in place and remove obsolete claims instead of appending conflicting corrections. Keep unsettled proposals in the separate "待确认" section.
+- Record checks actually run, their results, and outstanding validation. Do not mark unrun checks or unconfirmed manual validation as passed.
+- Before handing off or switching sessions, write important decisions, verified progress, unresolved issues, relevant paths, and the exact next action into the task document. Do not rely on chat history being available.
+- Research or planning alone does not authorize implementation. Existing authorization to implement remains valid across phases; do not add repetitive approval gates.
+
 # Python Package Management
 ONLY use uv for scripts and new projects, NEVER pip
 Installation: uv add package

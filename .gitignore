@@ -14,3 +14,7 @@ config/.config/karabiner/automatic_backups/
 
 # Zed auto-generated prompt library database
 config/.config/zed/prompts/
+
+# Python helper caches
+__pycache__/
+*.py[co]

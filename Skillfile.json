@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "repository": "inspirepan/agent-skills",
+  "revision": "8174e072956cf81e86b4758f655a4d35b987e16e",
+  "enabled": [
+    "agent-browser",
+    "frontend-design",
+    "image-gen",
+    "klaude-config",
+    "pdf",
+    "playwright",
+    "render-mermaid",
+    "session-logs",
+    "skill-creator",
+    "show-me",
+    "research-codebase",
+    "design-outline",
+    "implement-outline"
+  ]
+}

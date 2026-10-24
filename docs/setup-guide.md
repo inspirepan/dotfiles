@@ -1,3 +1,11 @@
+# 新设备初始化与已有设备更新
+
+- 新设备：按本指南安装前置工具；安装好 uv、Node.js（含 npx）、GNU Stow 后，Phase 3 执行 `scripts/dotfiles.sh init`，创建 Stow 链接并验证当前更新；继续其余手动配置。
+- 已有设备：先拉取 dotfiles，再执行 `scripts/dotfiles.sh status`、`scripts/dotfiles.sh update`。
+- 更新按 `updates/` 文件顺序运行；每台机器独立保存验证记录；失败停在当前步骤，解决后原命令重试。
+- Claude / Codex 共用 MD 已列为首个步骤；遇到有不同内容的本机 MD 会停止，合并后重试，不覆盖。
+- 新增配置变化时同时新增更新步骤，格式见 `updates/README.md`。
+
 # 新 Mac 设置指南
 
 用于初始化一台全新 macOS 机器的有序清单。
@@ -120,7 +128,7 @@ brew install --cask font-sf-pro         # Apple 字体
 
 ```bash
 cd ~/code/dotfiles
-stow --no-folding -t ~ zsh git config ssh claude klaude
+scripts/dotfiles.sh init
 ```
 
 这会创建以下符号链接：
@@ -143,6 +151,7 @@ stow --no-folding -t ~ zsh git config ssh claude klaude
 - `~/.ssh/config` -> `dotfiles/ssh/.ssh/config`
 - `~/.claude/statusline.sh` -> `dotfiles/claude/.claude/statusline.sh`
 - `~/.claude/CLAUDE.md` -> `dotfiles/claude/.claude/CLAUDE.md`
+- `~/.codex/AGENTS.md` -> `dotfiles/codex/.codex/AGENTS.md` -> `dotfiles/claude/.claude/CLAUDE.md`
 - `~/.klaude/klaude-config.yaml` -> `dotfiles/klaude/.klaude/klaude-config.yaml`
 
 若 Stow 提示现有文件冲突，先比较内容，不要直接使用 `--adopt`。本机的 `.zshrc` 和 Klaude YAML
@@ -156,8 +165,10 @@ for file in .zshrc .klaude/klaude-config.yaml; do
     mv "$HOME/$file" "$backup_dir/$file"
   fi
 done
-stow --no-folding -t ~ zsh git config ssh claude klaude
+stow --no-folding -t ~ zsh git config ssh claude codex klaude
 ```
+
+Claude Code 与 Codex 共用 `claude/.claude/CLAUDE.md`；只修改这一份指令。`codex` Stow 包只维护 `AGENTS.md` 链接，不接管 Codex 的认证、模型或其他配置。若 `~/.codex/AGENTS.md` 已是普通文件，先比较并合并需要保留的内容，再移走原文件，运行 `stow --no-folding -t ~ codex`；不要强制覆盖。
 
 Claude Code 的 `settings.json` 不入库（会被频繁改写）；Phase 4 从无凭证模板合并 statusline、模型和插件偏好。
 Klaude YAML 仅保存模型选择与 provider 开关，禁止加入明文凭证。`/model` 修改可能同步到仓库，提交前检查差异。
@@ -302,40 +313,22 @@ npm i -g vsce
 vsce package
 ```
 
-## Phase 6：Agent Skills
+## Phase 6：共享 Agent Skills
+
+技能正文只维护在 `inspirepan/agent-skills`；`Skillfile.json` 只记录仓库、完整提交和启用列表。通过 Vercel Skills CLI 安装，下载、共享目录、Agent 链接与来源锁均由 CLI 管理。
 
 ```bash
+~/code/dotfiles/scripts/setup-skills.sh --check
 ~/code/dotfiles/scripts/setup-skills.sh
 ```
 
-`Skillfile` 每行是 `github_repo skill_name`，名称取自远程 `SKILL.md` 的 frontmatter，而不是仓库目录名。
-脚本调用 `npx --yes skills add <repo> --skill <name> --global --agent claude-code --yes --json`，
-由 Skills CLI 负责发现、下载和记录来源，不再自己克隆 / 复制远程内容。Node.js 已在 Phase 1 安装，
-无需全局安装 `skills` npm 包。
+- Codex / klaude 读取 `~/.agents/skills/`；Claude Code 使用 CLI 建立的链接。
+- 固定调用 `npx --yes skills@1.7.4 add https://github.com/<仓库>/tree/<完整提交> --global --agent codex claude-code --skill <启用项> --yes --json`。
+- 同步前检查已有目录与原生 `.skill-lock.json`；同名个人目录、独立 Claude 内容、断链保留，退出码 2，阻止增量步骤登记完成。
+- 本来源已由 CLI 管理的技能按固定提交更新。不要直接编辑已安装副本；修改源码并提交，再更新清单。
+- 从启用列表移除不会删除已安装技能；确需卸载时用 `npx skills remove` 明确选择技能与 Agent。
+- klaude 不再打包或自动安装技能；旧隐藏目录保留但不再发现。
 
-`--json` 使安装失败返回非零退出码，避免 CLI 普通输出模式把失败当作成功；stdin 与清单读取隔离。
-
-CLI 只安装到 Claude Code：当前单 agent 安装会复制到 `~/.claude/skills/`，脚本再从
-`~/.agents/skills/` 链接到这份内容供 Klaude 读取，不创建其他 agent 的链接。
-若 CLI 使用共享目录加 Claude 链接的安装方式，脚本也会保留已指向同一份内容的路径。
-本地 skill（如 commit）继续链接仓库版本，不由 Skills CLI 安装或更新；不会改动 Klaude 的 `.system`。
-
-每次运行都安装 / 刷新清单里的远程 skills，也会补齐原先手动复制的 skill 的来源记录。
-已有远程内容和安装记录先复制备份到 `~/.local/state/dotfiles/skills-backups/`；本地链接冲突会先移动到备份。
-失败时脚本停止，备份保留供恢复；不承诺 Skills CLI 中途写入失败时自动回滚。
-主动刷新使用同一个命令（旧 `--update` 参数仍作为别名接受）：
-
-```bash
-~/code/dotfiles/scripts/setup-skills.sh
-```
-
-`~/.agents/.skill-lock.json` 由 CLI 自动维护来源、路径、内容 hash 和安装时间；它是本机安装记录，
-不纳入 Stow，也不是固定版本的锁文件。新机器从 `Skillfile` 重装，清单不锁定远程内容版本。
-可用 `npx --yes skills list -g -a claude-code` 检查安装结果。
-
-不要用无 agent 限制的 `npx skills add` 或 `--all`。
-当前 Skills CLI 1.7.1 的 `update -g` 会重新检测 agent，且不支持 `--agent` 过滤；
-本仓库用限定 Claude 的 `add` 刷新，避免更新时给其他 agent 建链接。
 
 ## Phase 7：密钥（补充）
 
