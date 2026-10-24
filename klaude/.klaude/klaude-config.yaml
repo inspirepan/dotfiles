@@ -1,11 +1,22 @@
 main_model:
-- gpt-6.1-sol@youtu-openai
+- gpt-6.1-sol@chatgpt
 - deepseek-flash:high@opencode-go
-fast_model: gpt-6-luna@youtu-openai
+fast_model: gpt-6-luna@chatgpt
 sub_agent_models:
-  finder: gpt-6-luna@youtu-openai
-  code-reviewer: gpt-6.1-sol@youtu-openai
-  code-maintenance-reviewer: gpt-6.1-sol@youtu-openai
+  finder: gpt-6-luna@chatgpt
+  code-reviewer: gpt-6.1-sol@chatgpt
+  code-maintenance-reviewer: gpt-6.1-sol@chatgpt
+web_search:
+  providers:
+  - provider: parallel
+    api_key: ${PARALLEL_API_KEY}
+  - provider: exa
+    api_key: ${EXA_API_KEY}
+  - provider: brave
+    api_key: ${BRAVE_API_KEY}
+  - provider: deepseek
+    api_key: ${DEEPSEEK_API_KEY}
+    base_url: https://api.deepseek.com
 provider_list:
 - provider_name: aws-bedrock
   disabled: true
@@ -21,3 +32,13 @@ provider_list:
   disabled: true
 - provider_name: opencode-go
   disabled: false
+- provider_name: youtu-openai
+  disabled: true
+- provider_name: youtu-anthropic
+  disabled: true
+- provider_name: youtu-gemini
+  disabled: true
+- provider_name: opencode-go-responses
+  disabled: true
+- provider_name: openrouter
+  disabled: true

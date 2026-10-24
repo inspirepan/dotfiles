@@ -162,6 +162,14 @@ stow --no-folding -t ~ zsh git config ssh claude klaude
 Claude Code 的 `settings.json` 不入库（会被频繁改写）；Phase 4 从无凭证模板合并 statusline、模型和插件偏好。
 Klaude YAML 仅保存模型选择与 provider 开关，禁止加入明文凭证。`/model` 修改可能同步到仓库，提交前检查差异。
 
+### 可选：公司自部署 GitLab
+
+- `~/.ssh/config` 会读取本机 `~/.ssh/config.local`。将公司 SSH 入口和专用 `IdentityFile` 放在此文件中，权限设为 `600`；本机文件不由 Stow 管理，也不入库。
+- 在本机生成专用 SSH 密钥，只上传公钥到 GitLab 的 SSH Keys；私钥不入库。先确认 GitLab 网页地址及仓库的 SSH Clone 地址，两者可能使用不同域名。
+- `glab` 由 Brewfile 安装。PAT 需要管理 MR 时使用 `api` scope，权限仍受项目角色和保护分支限制；优先设置短有效期。
+- 使用 `glab auth login --hostname <web-host> --ssh-hostname <ssh-host> --api-protocol https --git-protocol ssh --stdin < <token-file>` 登录。令牌文件权限设为 `600`；当前 glab 默认优先将凭证存入 macOS Keychain，不把 PAT 放进命令参数或 dotfiles。
+- 通过 `ssh -T git@<ssh-host>` 和 `glab mr list --repo https://<web-host>/<group>/<project>` 验证登录与读取权限，不用创建 MR 或推送代码来测试。
+
 安装 Ghostty terminfo（让其他设备 SSH 进来时终端渲染正常）：
 
 ```bash

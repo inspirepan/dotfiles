@@ -82,3 +82,6 @@ export RIPGREP_CONFIG_PATH="$HOME/.config/ripgrep/config"
 export PATH="$PATH:$HOME/.lmstudio/bin"
 # End of LM Studio CLI section
 
+
+# opencode
+export PATH=/Users/dev/.opencode/bin:$PATH

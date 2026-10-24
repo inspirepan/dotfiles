@@ -44,3 +44,7 @@
 	file-decoration-style = blue ul
 	line-numbers-plus-style = "#2e5a32"
 	line-numbers-minus-style = "#82071e"
+[init]
+	defaultBranch = main
+[includeIf "gitdir:/Users/dev/code/formless/"]
+	path = /Users/dev/.gitconfig-formless

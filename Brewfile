@@ -8,6 +8,7 @@ brew "tmux"
 # --- 版本控制 ---
 brew "git"
 brew "gh"
+brew "glab"
 brew "lazygit"
 
 # --- Jujutsu（jj）---
