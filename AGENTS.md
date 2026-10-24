@@ -9,7 +9,7 @@
 - `themes/` -- 自定义主题。`themes/vscode-blue-light/` 存放 VSCode 主题源文件和 vsix。
 - `Brewfile` -- 所有 Homebrew formulae、cask 和字体。
 - `skills/` -- 历史个人技能源码；已有安装不由新同步器自动接管或覆盖。自写和持续改写的技能在 `agent-skills` 维护；第三方技能直接从上游安装。
-- `Skillfile.json` -- 自有与第三方来源、各来源固定的完整提交和启用列表；由 `scripts/setup-skills.sh` 调用 Vercel Skills CLI 安装给 Codex / Claude Code，klaude 读取共享目录。
+- `Skillfile.json` -- 自有与第三方来源、启用列表和来源迁移声明，不锁提交；由 `scripts/setup-skills.sh` 调用最新版 Vercel Skills CLI 安装给 Codex / Claude Code，klaude 读取共享目录。
 - `templates/` -- 需要合并到本机文件的配置片段，不直接 stow；目前包含 Claude Code 的无凭证设置。
 - `scripts/` -- 辅助脚本（oh-my-zsh 安装、macOS 系统设置、skills 安装）。
 - `docs/` -- 安装指南和参考笔记。
@@ -24,11 +24,11 @@
 | `Brewfile` | `brew bundle --file=Brewfile` 一次装齐所有包 |
 | `scripts/setup-omz.sh` | 安装 oh-my-zsh + 插件 + jj 主题 |
 | `scripts/macos-defaults.sh` | 通过 `defaults write` 设置 macOS 系统偏好 |
-| `scripts/setup-skills.sh` | 共享技能同步入口，支持 `--check`，严格跟随清单提交 |
+| `scripts/setup-skills.sh` | 默认补齐和解除旧 SHA 锁定；`--update` 刷新全部无冲突技能；`--check` 只读检查 |
 | `scripts/dotfiles.sh` | `init` 初始化、`status` 检查、`update` 顺序增量更新 |
 | `updates/` | 已发布更新不可改写，新增步骤承载后续配置变化 |
-| `Skillfile.json` | 固定来源版本与启用列表 |
-| `docs/third-party-skills.md` | 第三方技能用途与来源；启用项和固定版本以 Skillfile.json 为准 |
+| `Skillfile.json` | 来源、启用列表与 `replaces` 声明 |
+| `docs/third-party-skills.md` | 第三方技能用途与来源；启用项以 Skillfile.json 为准 |
 
 ## 约定
 
@@ -40,8 +40,9 @@
 
 ## 共享技能与设备更新
 
-- 自写／改写技能正文在 `agent-skills`；第三方正文只在上游。`Skillfile.json` 记录全部来源、固定提交与启用项，安装委托给 `npx skills`。
-- `scripts/setup-skills.sh --check` 检查；已有个人内容保留并返回 2，不得将冲突标为已完成。
+- 自写／改写技能正文在 `inspirepan/agent-skills`；第三方正文只在上游。全部技能统一由 `npx skills` 安装更新，跟上游最新版；dotfiles 不存新技能正文、不锁提交，历史 `skills/` 保留。
+- `scripts/setup-skills.sh --check` 仅检查本地来源、布局和旧 SHA ref，不联网承诺已是最新；已有个人内容保留并返回 2，不得将冲突标为已完成。
+- 日常升级运行 `npx skills update -g -y`；新增启用项或迁移来源运行 `scripts/setup-skills.sh --update`。`dotfiles update` 只应用设备步骤，不强制刷新已完成项。
 - 新设备按安装指南运行 `scripts/dotfiles.sh init`；已有设备拉取后运行 `status` 和 `update`。
 - 恢复维护时先运行 `scripts/dotfiles.sh status`，读取未完成步骤及其依赖；不要重复加载整份历史。
 - 每次影响设备配置的变化新增 `updates/` 步骤，不改写已发布步骤；见 `updates/README.md`。

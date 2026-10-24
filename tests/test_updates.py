@@ -106,12 +106,12 @@ class UpdateTests(unittest.TestCase):
         self.assertFalse((self.home / '.claude').exists())
 
     def config(self):
-        (self.repo / 'Skillfile.json').write_text(json.dumps({'version': 1, 'repository': 'test/skills', 'revision': 'a'*40, 'enabled': ['demo']}))
+        (self.repo / 'Skillfile.json').write_text(json.dumps({'version': 1, 'repository': 'test/skills', 'enabled': ['demo']}))
 
     def install_record(self):
         path = self.home / '.agents/.skill-lock.json'
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps({'version': 3, 'skills': {'demo': {'source': 'test/skills', 'ref': 'a'*40}}}))
+        path.write_text(json.dumps({'version': 3, 'skills': {'demo': {'source': 'test/skills'}}}))
 
     def skill(self, relative):
         path = self.home / relative
@@ -129,6 +129,9 @@ class UpdateTests(unittest.TestCase):
         shutil.rmtree(target)
         target.symlink_to(self.home / 'missing')
         self.assertEqual(installer.plan(self.repo, self.home)[2], ['demo'])
+        with patch.object(installer.subprocess, 'run') as run, contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(installer.install(self.repo, self.home, update=True), 2)
+        run.assert_not_called()
 
     def test_independent_claude_skill_blocks_managed_canonical_update(self):
         self.config()
@@ -136,12 +139,14 @@ class UpdateTests(unittest.TestCase):
         self.skill('.agents/skills/demo')
         self.skill('.claude/skills/demo')
         self.assertEqual(installer.plan(self.repo, self.home)[2], ['demo'])
+        with patch.object(installer.subprocess, 'run') as run, contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(installer.install(self.repo, self.home, update=True), 2)
+        run.assert_not_called()
 
-    def test_cli_gets_pinned_source_and_selection(self):
+    def test_cli_gets_unpinned_source_and_selection(self):
         self.config()
         def install(command, **kwargs):
-            self.assertEqual(command[:4], ['npx', '--yes', 'skills@1.7.4', 'add'])
-            self.assertIn('https://github.com/test/skills/tree/' + 'a'*40, command)
+            self.assertEqual(command[:5], ['npx', '--yes', 'skills@latest', 'add', 'test/skills'])
             self.assertEqual(command[-4:], ['--skill', 'demo', '--yes', '--json'])
             self.install_record()
             canonical = self.skill('.agents/skills/demo')
@@ -158,6 +163,31 @@ class UpdateTests(unittest.TestCase):
         with patch.object(installer.subprocess, 'run', return_value=type('Result', (), {'returncode': 1, 'stderr': 'offline', 'stdout': ''})()), contextlib.redirect_stdout(io.StringIO()):
             with self.assertRaisesRegex(RuntimeError, 'offline'):
                 installer.install(self.repo, self.home)
+
+    def test_latest_step_migrates_sha_once_and_does_not_refresh_completed_step(self):
+        self.config()
+        self.install_record()
+        lock = self.home / '.agents/.skill-lock.json'
+        record = json.loads(lock.read_text())
+        record['skills']['demo']['ref'] = 'a'*40
+        lock.write_text(json.dumps(record))
+        canonical = self.skill('.agents/skills/demo')
+        client = self.home / '.claude/skills/demo'
+        client.parent.mkdir(parents=True)
+        client.symlink_to(canonical)
+        (self.repo / 'scripts').mkdir()
+        shutil.copyfile(ROOT / 'scripts/install-skills.py', self.repo / 'scripts/install-skills.py')
+        shutil.copyfile(ROOT / 'updates/20261024-005-latest-skills.py', self.repo / 'updates/20261024-005-latest-skills.py')
+        def apply(command, **kwargs):
+            self.assertEqual(command, [str(self.repo / 'scripts/setup-skills.sh'), '--update'])
+            self.install_record()
+        with patch.object(runner.subprocess, 'run', side_effect=apply) as run:
+            self.run_updates('status')
+            run.assert_not_called()
+            self.run_updates()
+            run.assert_called_once()
+            self.run_updates()
+            run.assert_called_once()
 
 if __name__ == '__main__':
     unittest.main()

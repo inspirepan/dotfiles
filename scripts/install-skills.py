@@ -2,7 +2,7 @@
 # requires-python = ">=3.12"
 # dependencies = []
 # ///
-"""Install pinned skills from declared sources through Vercel Skills."""
+"""Install latest skills from declared sources through Vercel Skills."""
 
 import argparse
 import json
@@ -26,8 +26,6 @@ def load_config(repository):
     for source in sources(config):
         if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", source["repository"]):
             raise ValueError("repository 必须是 owner/repo")
-        if not re.fullmatch(r"[0-9a-f]{40}", source["revision"]):
-            raise ValueError("revision 必须是完整提交 SHA")
         names = source["enabled"]
         if not isinstance(names, list) or any(
             not isinstance(name, str) or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", name) for name in names
@@ -66,25 +64,24 @@ def plan(repository, home):
                 not (canonical / "SKILL.md").is_file()
                 or not (client / "SKILL.md").is_file()
                 or record.get("source") != source["repository"]
-                or record.get("ref") != source["revision"]
+                or re.fullmatch(r"[0-9a-fA-F]{40}", record.get("ref") or "")
             ):
                 pending.append(name)
     return config, pending, conflicts
 
 
-def install(repository, home, check=False):
+def install(repository, home, check=False, update=False):
     config, pending, conflicts = plan(repository, home)
     for name in conflicts:
         print(f"保留个人技能：{name}（来源未授权接管，或客户端是独立内容）", flush=True)
     for source in sources(config):
-        selected = [name for name in source["enabled"] if name in pending]
+        selected = [name for name in source["enabled"] if name not in conflicts and (update or name in pending)]
         if not selected:
             continue
         print(f"待安装／更新 [{source['repository']}]：" + ", ".join(selected), flush=True)
         if check:
             continue
-        url = f"https://github.com/{source['repository']}/tree/{source['revision']}"
-        command = ["npx", "--yes", "skills@1.7.4", "add", url, "--global", "--agent", "codex", "claude-code", "--skill", *selected, "--yes", "--json"]
+        command = ["npx", "--yes", "skills@latest", "add", source["repository"], "--global", "--agent", "codex", "claude-code", "--skill", *selected, "--yes", "--json"]
         result = subprocess.run(command, env={**os.environ, "HOME": str(home), "DO_NOT_TRACK": "1"}, capture_output=True, text=True)
         if result.returncode:
             raise RuntimeError(f"{source['repository']}：{result.stderr or result.stdout}")
@@ -98,10 +95,10 @@ def install(repository, home, check=False):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--check", action="store_true")
-    parser.add_argument("--update", action="store_true", help="仍按清单固定版本安装")
+    parser.add_argument("--check", action="store_true", help="只检查本地来源、入口与旧 SHA ref，不联网检查最新版")
+    parser.add_argument("--update", action="store_true", help="刷新清单中全部无冲突技能到上游最新版")
     args = parser.parse_args()
-    return install(Path(__file__).resolve().parents[1], Path.home(), args.check)
+    return install(Path(__file__).resolve().parents[1], Path.home(), check=args.check, update=args.update)
 
 
 if __name__ == "__main__":

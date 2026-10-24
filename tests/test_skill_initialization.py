@@ -39,17 +39,18 @@ class InitializationTests(unittest.TestCase):
             installer = load(repo / 'scripts/install-skills.py', 'initialization_installer')
             config = installer.load_config(repo)
             sources = installer.sources(config)
-            by_url = {f"https://github.com/{s['repository']}/tree/{s['revision']}": s for s in sources}
+            by_repository = {s['repository']: s for s in sources}
             names = {name for source in sources for name in source['enabled']}
             calls = []
             original_run = subprocess.run
             def run(command, **kwargs):
                 if command[0].endswith('setup-skills.sh'):
-                    return subprocess.CompletedProcess(command, installer.install(repo, home))
+                    return subprocess.CompletedProcess(command, installer.install(repo, home, update='--update' in command))
                 if command[0] != 'npx':
                     return original_run(command, **kwargs)
                 self.assertEqual(command[3], 'add')
-                source = by_url[command[4]]
+                self.assertEqual(command[2], 'skills@latest')
+                source = by_repository[command[4]]
                 calls.append(source['repository'])
                 lock = home / '.agents/.skill-lock.json'
                 records = json.loads(lock.read_text()) if lock.exists() else {'skills': {}}
@@ -60,7 +61,7 @@ class InitializationTests(unittest.TestCase):
                     client = home / '.claude/skills' / name
                     client.parent.mkdir(parents=True, exist_ok=True)
                     client.symlink_to(target)
-                    records['skills'][name] = {'source': source['repository'], 'ref': source['revision']}
+                    records['skills'][name] = {'source': source['repository']}
                 lock.write_text(json.dumps(records))
                 return subprocess.CompletedProcess(command, 0, stdout='', stderr='')
             with patch.dict(os.environ, {'XDG_STATE_HOME': '', 'CLAUDE_CONFIG_DIR': str(home / '.claude')}), patch.object(subprocess, 'run', side_effect=run):

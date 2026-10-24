@@ -1,6 +1,6 @@
 # 第三方技能直接从上游安装
 
-第三方正文只由上游维护，不复制到 `agent-skills`。本页所列 25 个技能已在 `Skillfile.json` 启用，按各上游固定提交安装；`scripts/dotfiles.sh init` 和 `update` 共用同一清单。核对日期：2026-10-24。
+第三方正文只由上游维护，不复制到 `agent-skills`。本页所列 25 个技能已在 `Skillfile.json` 启用，与自有来源 `inspirepan/agent-skills` 一样，通过 `npx skills` 安装更新、跟上游最新版；不锁提交。核对日期：2026-10-24。
 
 ## 通用能力优先使用 Anthropic 官方源
 
@@ -78,18 +78,20 @@ npx skills add emilkowalski/skills -g -a codex claude-code -s emil-design-eng an
 | skill-creator | `npx skills add anthropics/skills -g -a codex claude-code -s skill-creator` |
 | playwright | `npx skills add openai/skills -g -a codex claude-code -s playwright` |
 
-来源：[agent-browser](https://github.com/vercel-labs/agent-browser)、[Anthropic Skills](https://github.com/anthropics/skills)、[OpenAI Skills](https://github.com/openai/skills/tree/main/skills/.curated/playwright)。这五份第三方副本已从 `agent-skills` 移除；dotfiles 只记录上游版本与来源迁移。
+来源：[agent-browser](https://github.com/vercel-labs/agent-browser)、[Anthropic Skills](https://github.com/anthropics/skills)、[OpenAI Skills](https://github.com/openai/skills/tree/main/skills/.curated/playwright)。这五份第三方副本已从 `agent-skills` 移除；dotfiles 只记录来源、启用项与来源迁移。
 
-## 初始化与增量更新都执行固定清单
+## 初始化按清单补齐，日常由原生 CLI 更新
 
 - 先用 `npx skills add <owner/repo> --list` 查看当前名称，再选择技能安装。
 - `-g` 安装到用户级；`-a codex claude-code` 配置共享入口，klaude 读取同一 `~/.agents/skills/`。
-- 本页简写命令用于单独安装当前上游版本；跨设备同步统一运行 `scripts/dotfiles.sh init` 或 `update`，使用清单内的完整 SHA。
+- 新设备运行 `scripts/dotfiles.sh init`；已有设备拉取后运行 `status`、`update` 应用设备步骤，不会每次强制刷新已完成技能步骤。
+- `scripts/setup-skills.sh` 默认补齐缺项、迁移已声明来源并解除旧 SHA ref；`--update` 刷新全部无冲突启用项；`--check` 只读检查本地来源与布局，不承诺已是上游最新。
+- 日常更新运行 `npx skills update -g -y`；有迁移来源或新增启用项时运行 `scripts/setup-skills.sh --update`。
 - 独立个人内容不会自动接管。未登记的旧目录先比较，再备份并切换；本机 Emil 的旧目录已按用户确认备份。
-- 自有 `commit` 仍位于 `skills/commit/SKILL.md`；它与第三方目录分开维护。
+- 历史 `skills/`（含 `skills/commit/SKILL.md`）保留，不由同步器自动接管；不在 dotfiles 新增技能正文。
 
-## 升级只修改对应来源的版本与启用项
+## 清单只维护来源与启用项，不锁提交
 
-- 自有来源使用顶层 `repository`、`revision`、`enabled`；第三方来源使用 `sources` 列表中的相同字段。
+- 自有来源使用顶层 `repository`、`enabled`；第三方来源使用 `sources` 列表中的相同字段，不再维护 `revision`。
 - 同名技能不重复启用；`replaces` 仅声明允许迁移的原仓库，不授权接管无来源记录的个人目录。
-- 更新固定提交后运行 `scripts/dotfiles.sh status`、`scripts/dotfiles.sh update`；新增设备配置变化时新增更新步骤，不改写已发布步骤。
+- 新增设备配置变化时新增更新步骤，不改写已发布步骤；005 承载解除旧提交锁定。上游内容升级不需要新增设备步骤。
