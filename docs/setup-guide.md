@@ -315,9 +315,9 @@ vsce package
 
 ## Phase 6：共享 Agent Skills
 
-第三方技能来源与按需安装命令见 [第三方技能目录](third-party-skills.md)，包括旧清单、Jakub better 系列和 Emil 动画系列；不在共享仓库复制正文。
+第三方技能用途与来源见 [第三方技能目录](third-party-skills.md)。旧清单、Jakub better 系列、精简后的 Emil 四项均已纳入初始化和增量更新，直接从上游安装。
 
-技能正文只维护在 `inspirepan/agent-skills`；`Skillfile.json` 只记录仓库、完整提交和启用列表。通过 Vercel Skills CLI 安装，下载、共享目录、Agent 链接与来源锁均由 CLI 管理。
+`inspirepan/agent-skills` 只维护自写和持续改写的技能；第三方正文保留在各自上游。`Skillfile.json` 的顶层记录自有来源，`sources` 记录第三方来源；各来源都有完整提交与启用列表。第三方通用能力优先使用 Anthropic 官方源。通过 Vercel Skills CLI 安装，下载、共享目录、Agent 链接与来源锁均由 CLI 管理。
 
 ```bash
 ~/code/dotfiles/scripts/setup-skills.sh --check
@@ -327,7 +327,8 @@ vsce package
 - Codex / klaude 读取 `~/.agents/skills/`；Claude Code 使用 CLI 建立的链接。
 - 固定调用 `npx --yes skills@1.7.4 add https://github.com/<仓库>/tree/<完整提交> --global --agent codex claude-code --skill <启用项> --yes --json`。
 - 同步前检查已有目录与原生 `.skill-lock.json`；同名个人目录、独立 Claude 内容、断链保留，退出码 2，阻止增量步骤登记完成。
-- 本来源已由 CLI 管理的技能按固定提交更新。不要直接编辑已安装副本；修改源码并提交，再更新清单。
+- 已由 CLI 管理的同来源技能按固定提交更新；明确切换来源时用 `replaces` 声明原仓库。未登记或独立个人内容仍保留并报冲突。
+- 不直接编辑已安装副本；自有技能修改源码，第三方升级则更新对应来源的 SHA。
 - 从启用列表移除不会删除已安装技能；确需卸载时用 `npx skills remove` 明确选择技能与 Agent。
 - klaude 不再打包或自动安装技能；旧隐藏目录保留但不再发现。
 - 会话日志技能名为 `klaude-session-logs`；增量步骤通过原生 CLI 移除受管的旧 `session-logs`，个人同名内容保留。

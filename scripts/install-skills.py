@@ -2,7 +2,7 @@
 # requires-python = ">=3.12"
 # dependencies = []
 # ///
-"""Select declared skills; delegate installation and provenance to Vercel Skills."""
+"""Install pinned skills from declared sources through Vercel Skills."""
 
 import argparse
 import json
@@ -12,19 +12,35 @@ import re
 import subprocess
 
 
+def sources(config):
+    return [config, *config.get("sources", [])]
+
+
 def load_config(repository):
     config = json.loads((repository / "Skillfile.json").read_text())
     if config.get("version") != 1:
         raise ValueError("不支持的 Skillfile 版本")
-    if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", config["repository"]):
-        raise ValueError("repository 必须是 owner/repo")
-    if not re.fullmatch(r"[0-9a-f]{40}", config["revision"]):
-        raise ValueError("revision 必须是完整提交 SHA")
-    names = config["enabled"]
-    if not isinstance(names, list) or any(
-        not isinstance(name, str) or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", name) for name in names
-    ) or len(set(names)) != len(names):
-        raise ValueError("enabled 必须是无重复的技能名列表")
+    if not isinstance(config.get("sources", []), list):
+        raise ValueError("sources 必须是来源列表")
+    seen = set()
+    for source in sources(config):
+        if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", source["repository"]):
+            raise ValueError("repository 必须是 owner/repo")
+        if not re.fullmatch(r"[0-9a-f]{40}", source["revision"]):
+            raise ValueError("revision 必须是完整提交 SHA")
+        names = source["enabled"]
+        if not isinstance(names, list) or any(
+            not isinstance(name, str) or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", name) for name in names
+        ):
+            raise ValueError("enabled 必须是技能名列表")
+        if len(set(names)) != len(names) or seen.intersection(names):
+            raise ValueError("同一技能名只能启用一个来源")
+        seen.update(names)
+        replaces = source.get("replaces", [])
+        if not isinstance(replaces, list) or any(
+            not isinstance(old, str) or not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", old) for old in replaces
+        ):
+            raise ValueError("replaces 必须是允许迁移的原来源列表")
     return config
 
 
@@ -36,37 +52,47 @@ def plan(repository, home):
     shared = home / ".agents/skills"
     claude = Path(os.environ.get("CLAUDE_CONFIG_DIR", str(home / ".claude"))).expanduser() / "skills"
     pending, conflicts = [], []
-    for name in config["enabled"]:
-        canonical, client = shared / name, claude / name
-        record = lock.get(name, {})
-        owned = record.get("source") == config["repository"]
-        foreign_client = os.path.lexists(client) and not (
-            canonical.exists() and client.is_symlink() and client.resolve() == canonical.resolve()
-        )
-        if (os.path.lexists(canonical) and (not owned or canonical.is_symlink())) or foreign_client:
-            conflicts.append(name)
-        elif not (canonical / "SKILL.md").is_file() or not (client / "SKILL.md").is_file() or record.get("ref") != config["revision"]:
-            pending.append(name)
+    for source in sources(config):
+        for name in source["enabled"]:
+            canonical, client = shared / name, claude / name
+            record = lock.get(name, {})
+            owned = record.get("source") in [source["repository"], *source.get("replaces", [])]
+            foreign_client = os.path.lexists(client) and not (
+                canonical.exists() and client.is_symlink() and client.resolve() == canonical.resolve()
+            )
+            if (os.path.lexists(canonical) and (not owned or canonical.is_symlink())) or foreign_client:
+                conflicts.append(name)
+            elif (
+                not (canonical / "SKILL.md").is_file()
+                or not (client / "SKILL.md").is_file()
+                or record.get("source") != source["repository"]
+                or record.get("ref") != source["revision"]
+            ):
+                pending.append(name)
     return config, pending, conflicts
 
 
 def install(repository, home, check=False):
     config, pending, conflicts = plan(repository, home)
     for name in conflicts:
-        print(f"保留个人技能：{name}（没有本来源的 Vercel 安装记录，或客户端是独立内容）")
-    if pending:
-        print("待安装／更新：" + ", ".join(pending))
-    if pending and not check:
-        source = f"https://github.com/{config['repository']}/tree/{config['revision']}"
-        command = ["npx", "--yes", "skills@1.7.4", "add", source, "--global", "--agent", "codex", "claude-code", "--skill", *pending, "--yes", "--json"]
-        result = subprocess.run(command, env={**os.environ, "DO_NOT_TRACK": "1"}, capture_output=True, text=True)
+        print(f"保留个人技能：{name}（来源未授权接管，或客户端是独立内容）", flush=True)
+    for source in sources(config):
+        selected = [name for name in source["enabled"] if name in pending]
+        if not selected:
+            continue
+        print(f"待安装／更新 [{source['repository']}]：" + ", ".join(selected), flush=True)
+        if check:
+            continue
+        url = f"https://github.com/{source['repository']}/tree/{source['revision']}"
+        command = ["npx", "--yes", "skills@1.7.4", "add", url, "--global", "--agent", "codex", "claude-code", "--skill", *selected, "--yes", "--json"]
+        result = subprocess.run(command, env={**os.environ, "HOME": str(home), "DO_NOT_TRACK": "1"}, capture_output=True, text=True)
         if result.returncode:
-            raise RuntimeError(result.stderr or result.stdout)
+            raise RuntimeError(f"{source['repository']}：{result.stderr or result.stdout}")
         _, remaining, new_conflicts = plan(repository, home)
-        if remaining:
-            raise RuntimeError("Vercel 安装记录或入口未通过验证：" + ", ".join(remaining))
-        conflicts = new_conflicts
-    print(f"{'检查' if check else '安装'}完成：{len(pending) if check else 0} 项待同步，{len(conflicts)} 项保留冲突")
+        if set(selected).intersection(remaining) or set(selected).intersection(new_conflicts):
+            raise RuntimeError("Vercel 安装记录或入口未通过验证：" + ", ".join(selected))
+    _, remaining, conflicts = plan(repository, home)
+    print(f"{'检查' if check else '安装'}完成：{len(remaining)} 项待同步，{len(conflicts)} 项保留冲突")
     return 2 if conflicts else 0
 
 

@@ -1,20 +1,105 @@
 {
   "version": 1,
   "repository": "inspirepan/agent-skills",
-  "revision": "159694eac392e87514d6cd1f9287a3bf0477bb3e",
+  "revision": "b6c88558d4a40a4cd45d7ac4f9d11715b2129782",
   "enabled": [
-    "agent-browser",
-    "frontend-design",
     "image-gen",
     "klaude-config",
-    "pdf",
-    "playwright",
     "render-mermaid",
     "klaude-session-logs",
-    "skill-creator",
     "show-me",
     "research-codebase",
     "design-outline",
     "implement-outline"
+  ],
+  "sources": [
+    {
+      "repository": "emilkowalski/skills",
+      "revision": "2d228630ba1446365f614a108cb8252f1feda202",
+      "enabled": [
+        "emil-design-eng",
+        "animate",
+        "review-animations",
+        "animation-performance"
+      ]
+    },
+    {
+      "repository": "vercel-labs/skills",
+      "revision": "a80e4c9d12d607631249d4d7d059f835d4b2f13a",
+      "enabled": [
+        "find-skills"
+      ]
+    },
+    {
+      "repository": "vercel-labs/agent-skills",
+      "revision": "063bee94c3f4df8453406c830b0a7df0f2860278",
+      "enabled": [
+        "vercel-react-best-practices"
+      ]
+    },
+    {
+      "repository": "jakubkrehel/make-interfaces-feel-better",
+      "revision": "35545ea1512ad59fa463e6b1f95ca9c052981fe6",
+      "enabled": [
+        "make-interfaces-feel-better"
+      ]
+    },
+    {
+      "repository": "nutlope/hallmark",
+      "revision": "7ec868225c6caa040558c321ee0fefa0e73f83a8",
+      "enabled": [
+        "hallmark"
+      ]
+    },
+    {
+      "repository": "jakubkrehel/skills",
+      "revision": "019ab7c199154f4509b55f12d84a4f5b578dc606",
+      "enabled": [
+        "better-interface",
+        "better-ui",
+        "better-typography",
+        "better-colors",
+        "better-accessibility",
+        "better-layout",
+        "better-writing",
+        "interface-review",
+        "explain-interface",
+        "build-design",
+        "state-machine",
+        "variant"
+      ]
+    },
+    {
+      "repository": "vercel-labs/agent-browser",
+      "revision": "372ac5ce20fab885dbf45ee0c9d510ec8c3b6fdb",
+      "enabled": [
+        "agent-browser"
+      ],
+      "replaces": [
+        "inspirepan/agent-skills"
+      ]
+    },
+    {
+      "repository": "anthropics/skills",
+      "revision": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
+      "enabled": [
+        "frontend-design",
+        "pdf",
+        "skill-creator"
+      ],
+      "replaces": [
+        "inspirepan/agent-skills"
+      ]
+    },
+    {
+      "repository": "openai/skills",
+      "revision": "49f948faa9258a0c61caceaf225e179651397431",
+      "enabled": [
+        "playwright"
+      ],
+      "replaces": [
+        "inspirepan/agent-skills"
+      ]
+    }
   ]
 }
