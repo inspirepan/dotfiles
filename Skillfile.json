@@ -1,7 +1,7 @@
 {
   "version": 1,
   "repository": "inspirepan/agent-skills",
-  "revision": "8174e072956cf81e86b4758f655a4d35b987e16e",
+  "revision": "159694eac392e87514d6cd1f9287a3bf0477bb3e",
   "enabled": [
     "agent-browser",
     "frontend-design",
@@ -10,7 +10,7 @@
     "pdf",
     "playwright",
     "render-mermaid",
-    "session-logs",
+    "klaude-session-logs",
     "skill-creator",
     "show-me",
     "research-codebase",

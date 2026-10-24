@@ -315,6 +315,8 @@ vsce package
 
 ## Phase 6：共享 Agent Skills
 
+第三方技能来源与按需安装命令见 [第三方技能目录](third-party-skills.md)，包括旧清单、Jakub better 系列和 Emil 动画系列；不在共享仓库复制正文。
+
 技能正文只维护在 `inspirepan/agent-skills`；`Skillfile.json` 只记录仓库、完整提交和启用列表。通过 Vercel Skills CLI 安装，下载、共享目录、Agent 链接与来源锁均由 CLI 管理。
 
 ```bash
@@ -328,6 +330,7 @@ vsce package
 - 本来源已由 CLI 管理的技能按固定提交更新。不要直接编辑已安装副本；修改源码并提交，再更新清单。
 - 从启用列表移除不会删除已安装技能；确需卸载时用 `npx skills remove` 明确选择技能与 Agent。
 - klaude 不再打包或自动安装技能；旧隐藏目录保留但不再发现。
+- 会话日志技能名为 `klaude-session-logs`；增量步骤通过原生 CLI 移除受管的旧 `session-logs`，个人同名内容保留。
 
 
 ## Phase 7：密钥（补充）

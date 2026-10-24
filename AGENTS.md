@@ -28,6 +28,7 @@
 | `scripts/dotfiles.sh` | `init` 初始化、`status` 检查、`update` 顺序增量更新 |
 | `updates/` | 已发布更新不可改写，新增步骤承载后续配置变化 |
 | `Skillfile.json` | 固定来源版本与启用列表 |
+| `docs/third-party-skills.md` | 第三方技能来源与上游直装命令，只记录、不自动安装 |
 
 ## 约定
 
