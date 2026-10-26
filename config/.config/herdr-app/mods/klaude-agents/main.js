@@ -3,7 +3,7 @@
 
 import { View, div, image, svg } from "gpui-kit";
 import { v_flex, h_flex } from "gpui-base";
-import { agents, terminals, panes, focused, spaces, run, theme, shared, setShared, setAgentOrder, openOverlay, closeOverlay, props, window, layout } from "herdr";
+import { agents, terminals, panes, focused, run, theme, shared, setShared, setAgentOrder, openOverlay, closeOverlay, props, window, layout } from "herdr";
 
 function find(node, id) {
   if (node?.id === id) return node;
@@ -26,20 +26,6 @@ function toggleSidebar() {
   run("layout.resize", { id: "sidebar", px: narrow() ? (shared("sidebar.width") ?? 268) : window()?.platform === "macos" ? 76 : 44 });
 }
 
-const clean = (s) => (s ?? "").replace(/^[^\p{L}\p{N}]+/u, "").trim();
-
-function lead(tab, all = panes()) {
-  const mine = all.filter(p => p.tab === tab.id && p.terminal);
-  return mine.find(p => p.program?.agent) ?? mine.find(p => p.focused) ?? mine[0];
-}
-
-function title(tab, l, klaude = false) {
-  const prog = l?.program?.name;
-  const live = clean(l?.title);
-  const telling = live && live !== prog && !/^[~/]|^[A-Za-z]:\\/.test(live) && !live.includes("@") && live.toLowerCase() !== l?.program?.key;
-  if (klaude && !tab.named && /^\d+$/.test(tab.name) && live) return live;
-  return tab.name === prog && telling ? live : tab.name;
-}
 const RANK = { blocked: 4, done: 3, working: 2, idle: 1 };
 // A sub-agent without a pane isn't in agents(): its raw word, error counting as
 // blocked. It's never done: it reports to its parent, and the parent's done is the news.
@@ -265,26 +251,12 @@ export default class Agents extends View {
         .when(!open, (el) => el.child(String(subs.length)));
     };
 
-    // A row reads "space \u00b7 detail": the detail is a tab someone named or the
-    // agent's own title, never an automatic tab number unless two rows would
-    // otherwise read the same.
-    const tabs = spaces().flatMap(s => s.tabs);
-    const label = (a) => {
-      const tab = tabs.find(tab => tab.id === a.tab);
-      const pane = panes().find(p => p.pane === a.pane && p.tab === a.tab);
-      if (tab && (pane?.program?.key === "klaude" || a.app === "klaude")) return title(tab, pane, true);
-      return tab ? title(tab, lead(tab)) : a.title || a.program?.name || "";
-    };
-    const detail = new Map(list.map(a => [a.address, /^\d+$/.test(label(a)) ? null : label(a)]));
-    const seen = {};
-    for (const a of list) { const k = `${a.space_name}\u0000${detail.get(a.address) ?? ""}`; seen[k] = (seen[k] ?? 0) + 1; }
-    for (const a of list) {
-      if (detail.get(a.address) == null && seen[`${a.space_name}\u0000`] > 1) detail.set(a.address, label(a));
-    }
+    const allPanes = panes();
 
     const row = (a, i, subs = []) => {
       const pic = icon(a.program, 16, t.foreground);
-      const more = detail.get(a.address);
+      const cwd = allPanes.find(p => p.pane === a.pane && p.tab === a.tab)?.cwd;
+      const name = cwd ? cwd.replace(/\/+$/, "").split("/").pop() || "/" : "-";
       // An agent on another machine (`vps/t7`) says which.
       const machine = a.address.includes("/") ? a.address.split("/")[0] : null;
       if (collapsed) {
@@ -320,10 +292,6 @@ export default class Agents extends View {
           cx.notify();
         })
         .child(svg(`mods/workspace-chrome/${isPinned ? "pin-off" : "pin"}.svg`).size(13));
-      // Under a space header the space goes without saying; an automatic tab number says nothing.
-      // Without a space header above (priority, pinned) the row names its space.
-      const full = byPriority || isPinned;
-      const name = full ? a.space_name || label(a) : more ?? (/^\d+$/.test(label(a)) ? a.program?.name || label(a) : label(a));
       return h_flex()
         .id(`ag-${a.address}`)
         .w_full().min_w(0)
@@ -348,13 +316,12 @@ export default class Agents extends View {
             this.folded.has(a.address) ? this.folded.delete(a.address) : this.folded.add(a.address);
             cx.notify();
           })).child(pic)))
-        .child(h_flex().flex_1().min_w(0).overflow_hidden().gap(5).items_center()
-          .child(div().flex_1().min_w(0).overflow_hidden().truncate().text_color(idle ? t.muted : t.foreground).child(name))
-          .when(full && Boolean(more), el => el.child(div().flex_1().min_w(0).overflow_hidden().truncate().text_color(t.dim).child(`\u00b7 ${more}`))))
+        .child(div().flex_1().min_w(0).overflow_hidden().truncate().text_color(idle ? t.muted : t.foreground).child(name))
         .when(Boolean(machine), el => el.child(div().flex_none().text_size(10).text_color(t.dim).child(machine)))
         .when(subs.length > 0, el => el.child(fold(a, subs)))
-        .when(this.hovered === a.address, el => el.child(pin))
-        .when(this.hovered !== a.address && Boolean(when), el => el.child(div().flex_none().text_size(11).text_color(t.dim).child(duration(now - when))))
+        .child(h_flex().w(28).flex_none().items_center().justify_center()
+          .when(this.hovered === a.address, el => el.child(pin))
+          .when(this.hovered !== a.address && Boolean(when), el => el.child(div().text_size(11).text_color(t.dim).child(duration(now - when)))))
         .child(this.status(t, a, byPriority && !isPinned));
     };
 
