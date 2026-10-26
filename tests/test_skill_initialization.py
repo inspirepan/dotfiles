@@ -34,6 +34,9 @@ class InitializationTests(unittest.TestCase):
             layout.parent.mkdir(parents=True)
             layout.write_text('{"children":[{"content":{"mod":"tabs"}},{"id":"agents","content":{"mod":"agents"}},{"content":{"pane":{"header":{"content":{"mod":"pane"}}}}}]}')
             original_layout = layout.read_bytes()
+            karabiner = repo / 'config/.config/karabiner/karabiner.json'
+            karabiner.parent.mkdir(parents=True)
+            shutil.copyfile(ROOT / 'config/.config/karabiner/karabiner.json', karabiner)
             shared = repo / 'claude/.claude/CLAUDE.md'
             shared.parent.mkdir()
             shared.write_text('instructions')

@@ -222,6 +222,8 @@ Ghostty 配置脚本同时处理 macOS 入口的 `config` 和新版 `config.ghos
 
 `~/.zshrc` 会在远端缺少 `xterm-ghostty` terminfo 时自动退回 `TERM=xterm-256color`。
 
+Karabiner：Caps Lock → 左 Command、左 Command → 左 Control、左 Control → Caps Lock。宁芝 82EC-S（VID 1155、PID 20783）在键盘内置此映射，由 Karabiner 接管；平时不再重复映射，Steam 或星露谷物语（含 SMAPI）位于前台时反向还原三个键。其他键盘在这些应用中停用上述映射。
+
 **注意**：Karabiner-Elements 第一次启动时可能不接受符号链接配置。
 如果它覆盖了符号链接，就先改为直接复制文件，之后再重新 `stow`。
 

@@ -1,5 +1,7 @@
 {
-    "global": { "show_in_menu_bar": false },
+    "global": {
+        "show_in_menu_bar": false
+    },
     "profiles": [
         {
             "devices": [
@@ -9,26 +11,257 @@
                         "product_id": 20783,
                         "vendor_id": 1155
                     },
-                    "ignore": true
+                    "ignore": false
                 }
             ],
             "name": "Default profile",
             "selected": true,
-            "simple_modifications": [
-                {
-                    "from": { "key_code": "caps_lock" },
-                    "to": [{ "key_code": "left_command" }]
-                },
-                {
-                    "from": { "key_code": "left_command" },
-                    "to": [{ "key_code": "left_control" }]
-                },
-                {
-                    "from": { "key_code": "left_control" },
-                    "to": [{ "key_code": "caps_lock" }]
-                }
-            ],
-            "virtual_hid_keyboard": { "keyboard_type_v2": "ansi" }
+            "simple_modifications": [],
+            "virtual_hid_keyboard": {
+                "keyboard_type_v2": "ansi"
+            },
+            "complex_modifications": {
+                "rules": [
+                    {
+                        "description": "Restore NIZ 82EC-S hardware-remapped keys in Steam and Stardew Valley (including SMAPI)",
+                        "manipulators": [
+                            {
+                                "type": "basic",
+                                "from": {
+                                    "key_code": "left_command",
+                                    "modifiers": {
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "caps_lock"
+                                    }
+                                ],
+                                "conditions": [
+                                    {
+                                        "type": "device_if",
+                                        "identifiers": [
+                                            {
+                                                "vendor_id": 1155,
+                                                "product_id": 20783,
+                                                "is_keyboard": true
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "frontmost_application_if",
+                                        "bundle_identifiers": [
+                                            "^com\\.valvesoftware\\.steam(?:\\.helper)?$",
+                                            "^com\\.concernedape\\.stardewvalley$"
+                                        ],
+                                        "file_paths": [
+                                            "/Stardew Valley/Contents/MacOS/(StardewModdingAPI|StardewValley|Stardew Valley)$"
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "basic",
+                                "from": {
+                                    "key_code": "left_control",
+                                    "modifiers": {
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "left_command"
+                                    }
+                                ],
+                                "conditions": [
+                                    {
+                                        "type": "device_if",
+                                        "identifiers": [
+                                            {
+                                                "vendor_id": 1155,
+                                                "product_id": 20783,
+                                                "is_keyboard": true
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "frontmost_application_if",
+                                        "bundle_identifiers": [
+                                            "^com\\.valvesoftware\\.steam(?:\\.helper)?$",
+                                            "^com\\.concernedape\\.stardewvalley$"
+                                        ],
+                                        "file_paths": [
+                                            "/Stardew Valley/Contents/MacOS/(StardewModdingAPI|StardewValley|Stardew Valley)$"
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "basic",
+                                "from": {
+                                    "key_code": "caps_lock",
+                                    "modifiers": {
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "left_control"
+                                    }
+                                ],
+                                "conditions": [
+                                    {
+                                        "type": "device_if",
+                                        "identifiers": [
+                                            {
+                                                "vendor_id": 1155,
+                                                "product_id": 20783,
+                                                "is_keyboard": true
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "frontmost_application_if",
+                                        "bundle_identifiers": [
+                                            "^com\\.valvesoftware\\.steam(?:\\.helper)?$",
+                                            "^com\\.concernedape\\.stardewvalley$"
+                                        ],
+                                        "file_paths": [
+                                            "/Stardew Valley/Contents/MacOS/(StardewModdingAPI|StardewValley|Stardew Valley)$"
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Modifier remapping on other keyboards except in Steam and Stardew Valley",
+                        "manipulators": [
+                            {
+                                "type": "basic",
+                                "from": {
+                                    "key_code": "caps_lock",
+                                    "modifiers": {
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "left_command"
+                                    }
+                                ],
+                                "conditions": [
+                                    {
+                                        "type": "frontmost_application_unless",
+                                        "bundle_identifiers": [
+                                            "^com\\.valvesoftware\\.steam(?:\\.helper)?$",
+                                            "^com\\.concernedape\\.stardewvalley$"
+                                        ],
+                                        "file_paths": [
+                                            "/Stardew Valley/Contents/MacOS/(StardewModdingAPI|StardewValley|Stardew Valley)$"
+                                        ]
+                                    },
+                                    {
+                                        "type": "device_unless",
+                                        "identifiers": [
+                                            {
+                                                "vendor_id": 1155,
+                                                "product_id": 20783,
+                                                "is_keyboard": true
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "basic",
+                                "from": {
+                                    "key_code": "left_command",
+                                    "modifiers": {
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "left_control"
+                                    }
+                                ],
+                                "conditions": [
+                                    {
+                                        "type": "frontmost_application_unless",
+                                        "bundle_identifiers": [
+                                            "^com\\.valvesoftware\\.steam(?:\\.helper)?$",
+                                            "^com\\.concernedape\\.stardewvalley$"
+                                        ],
+                                        "file_paths": [
+                                            "/Stardew Valley/Contents/MacOS/(StardewModdingAPI|StardewValley|Stardew Valley)$"
+                                        ]
+                                    },
+                                    {
+                                        "type": "device_unless",
+                                        "identifiers": [
+                                            {
+                                                "vendor_id": 1155,
+                                                "product_id": 20783,
+                                                "is_keyboard": true
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "basic",
+                                "from": {
+                                    "key_code": "left_control",
+                                    "modifiers": {
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "caps_lock"
+                                    }
+                                ],
+                                "conditions": [
+                                    {
+                                        "type": "frontmost_application_unless",
+                                        "bundle_identifiers": [
+                                            "^com\\.valvesoftware\\.steam(?:\\.helper)?$",
+                                            "^com\\.concernedape\\.stardewvalley$"
+                                        ],
+                                        "file_paths": [
+                                            "/Stardew Valley/Contents/MacOS/(StardewModdingAPI|StardewValley|Stardew Valley)$"
+                                        ]
+                                    },
+                                    {
+                                        "type": "device_unless",
+                                        "identifiers": [
+                                            {
+                                                "vendor_id": 1155,
+                                                "product_id": 20783,
+                                                "is_keyboard": true
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
         }
     ]
 }
