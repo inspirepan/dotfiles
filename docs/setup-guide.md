@@ -89,7 +89,7 @@ brew bundle --file=~/code/dotfiles/Brewfile
 ```
 
 其中也会安装 `fzf` 和 `neovim`，供 `fb` 做上下键交互选文件并直接进入只读查看；还会安装
-`poppler`（PDF 查看 / 渲染）、`summarize` 和 `mole`。`terminal-notifier` 用于 Herdr 的可选系统通知，单独安装时使用：
+`poppler`（PDF 查看 / 渲染）、`summarize` 和 `mole`，以及菜单栏用量查看工具 CodexBar（`codexbar`）。已有设备运行 `scripts/dotfiles.sh update` 补装 CodexBar。`terminal-notifier` 用于 Herdr 的可选系统通知，单独安装时使用：
 
 ```bash
 brew install terminal-notifier
@@ -185,7 +185,7 @@ Agents 列表的文件夹名随侧栏宽度截断，时间与 hover 图钉共用
 `Cmd+T` 新建标签页，`Cmd+N` 新建 space；旧的 `Cmd+Ctrl` 兼容快捷键已移除。关闭 space 使用菜单或命令面板。
 旧版 `herdr/config.toml` 保留不变。工作区、终端会话、窗口状态、`shared.json`、缓存及内置 mods/layouts/icons 不同步。003 从本机 002 修改后的 `main` 创建个人 `layouts/klaude.json`，保留本机布局其他内容及 `klaude-tabs` 引用，再从匹配的 002 备份逐字节恢复内置 `main`；生成的个人布局不入库。内置布局每次启动会被替换，不能用于持久化自定义。若 `main` 有额外修改或已有不同的 `klaude.json`，更新停止且不覆盖。
 
-另一台 Mac 先安装 Herdr app、Klaude 和配置所用的 TX-02 / Inter Variable 字体，启动一次 Herdr app 生成默认布局，再拉取 dotfiles 并执行：
+另一台 Mac 先安装 Herdr app、Klaude 和配置所用的 TX-02-Variable / Geist 字体（字号 14、缩放 1.1），启动一次 Herdr app 生成默认布局，再拉取 dotfiles 并执行：
 
 ```bash
 cd ~/code/dotfiles

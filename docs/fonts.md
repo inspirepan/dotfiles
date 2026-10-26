@@ -3,11 +3,11 @@
 ## 当前配置依赖的字体
 
 - **Paper Mono** -- Ghostty、Zed 和 VSCode 的主要等宽字体；由 `font-paper-mono` 安装。
-- **TX-02 / TX-02-Variable** -- Ghostty 的备用字体，需从已购买的 [Berkeley Mono](https://usgraphics.com/products/berkeley-mono) 下载并手动安装。
+- **TX-02 / TX-02-Variable** -- Ghostty 的备用字体；Herdr 使用 TX-02-Variable。需从已购买的 [Berkeley Mono](https://usgraphics.com/products/berkeley-mono) 下载并手动安装。
 - **STIX Two Math** -- Ghostty 数学符号备用字体；由 `font-stix-two-math` 安装。
 - **JetBrains Mono Nerd Font** -- Ghostty 备用等宽字体与图标。
 - **Sarasa Gothic** -- Ghostty 斜体的 CJK 备用字体；常规文字也使用 macOS 自带的苹方。
-- **Geist** -- Zed UI 字体。
+- **Geist** -- Zed 和 Herdr UI 字体。
 
 Paper Mono 使用 SIL Open Font License，官方来源为 [paper-design/paper-mono](https://github.com/paper-design/paper-mono)。
 商业字体不入库；从个人授权来源获取 OTF/TTF，用字体册安装。不同下载版本的 family name 可能不同，

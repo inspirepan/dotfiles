@@ -53,8 +53,18 @@ class InitializationTests(unittest.TestCase):
             self.assertIn('commit', config['enabled'])
             self.assertEqual(len(names), 34)
             calls = []
+            brew_installed = False
+            brew_installs = []
             original_run = subprocess.run
             def run(command, **kwargs):
+                nonlocal brew_installed
+                if command[0] == 'brew':
+                    if command == ['brew', 'list', '--cask', 'codexbar']:
+                        return subprocess.CompletedProcess(command, 0 if brew_installed else 1)
+                    self.assertEqual(command, ['brew', 'install', '--cask', 'codexbar'])
+                    brew_installs.append(command)
+                    brew_installed = True
+                    return subprocess.CompletedProcess(command, 0)
                 if command[0].endswith('setup-skills.sh'):
                     return subprocess.CompletedProcess(command, installer.install(repo, home, update='--update' in command))
                 if command[0] != 'npx':
@@ -81,6 +91,7 @@ class InitializationTests(unittest.TestCase):
                 backups = sorted((home / '.local/state/dotfiles/backups').iterdir())
                 runner.execute(repo, home, 'update')
                 self.assertEqual(len(calls), installed_count)
+                self.assertEqual(len(brew_installs), 1)
                 self.assertEqual(sorted((home / '.local/state/dotfiles/backups').iterdir()), backups)
             self.assertEqual(layout.read_bytes(), original_layout)
             self.assertEqual(json.loads(layout.with_name('klaude.json').read_text()),

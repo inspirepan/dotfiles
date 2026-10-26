@@ -62,6 +62,7 @@ cask "spotify"
 cask "telegram"
 cask "libreoffice"
 cask "stats"
+cask "codexbar"
 
 # --- Cask：字体 ---
 cask "font-paper-mono"
