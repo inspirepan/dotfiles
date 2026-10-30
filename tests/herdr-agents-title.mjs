@@ -25,12 +25,12 @@ let tab = { id: 'tab', name: '1', named: false };
 const program = { key: 'klaude', name: 'Klaude', agent: true };
 let ps = [
   { pane: 'p1', tab: 'tab', terminal: 't1', program, title: '◐ First session', cwd: '/Users/test/code/dev' },
-  { pane: 'p2', tab: 'tab', terminal: 't2', program, title: '◐ Second session', cwd: '/Users/test/code/dotfiles/' },
+  { pane: 'p2', tab: 'tab', terminal: 't2', program: { key: 'codex', name: 'Codex', agent: true }, title: '[P1] Second session', cwd: '/Users/test/code/dotfiles/' },
 ];
-let list = ps.map((p, i) => ({ pane: p.pane, tab: 'tab', address: `t${i+1}`, space: 's', space_name: '~', status: 'idle', program, app: 'klaude', seq: i }));
+let list = ps.map((p, i) => ({ pane: p.pane, tab: 'tab', address: `t${i+1}`, space: 's', space_name: '~', status: 'idle', program: p.program, seq: i }));
 const context = { View: class {}, div: el, image: el, svg: el, v_flex: el, h_flex: el,
   agents: () => list, panes: () => ps, terminals: () => [], focused: () => null,
-  spaces: () => [{ tabs: [tab] }], theme: () => ({}), props: () => ({}),
+  spaces: () => { throw new Error('Agent titles must not depend on tabs'); }, theme: () => ({}), props: () => ({}),
   shared: key => key === 'agents.sort' ? sort : null, layout: () => ({ id: 'sidebar', size: { px: sidebarWidth } }),
   run() {}, setShared() {}, setAgentOrder() {}, openOverlay() {}, closeOverlay() {}, window() {} };
 vm.runInNewContext(source, context);
@@ -53,14 +53,15 @@ function rows() {
 }
 for (sort of ['priority', 'grouped']) {
   let r = rows();
-  assert.equal(r['ag-t1'], 'dev'); assert.equal(r['ag-t2'], 'dotfiles');
-  ps[0].title = '◐ Upgrade @scope/pkg';
-  assert.equal(rows()['ag-t1'], 'dev');
+  assert.equal(r['ag-t1'], '◐ First session'); assert.equal(r['ag-t2'], '[P1] Second session');
+  ps[0].title = '◐ 打招呼 · dotfiles';
+  assert.equal(rows()['ag-t1'], '◐ 打招呼 · dotfiles');
+  assert.equal(rows()['ag-t2'], '[P1] Second session');
   ps[0].title = '◐ First session';
   tab = { ...tab, name: 'Custom', named: true };
-  r = rows(); assert.equal(r['ag-t1'], 'dev');
+  r = rows(); assert.equal(r['ag-t1'], '◐ First session');
   tab = { ...tab, name: '1', named: true };
-  r = rows(); assert.doesNotMatch(r['ag-t1'], /First session/);
+  r = rows(); assert.equal(r['ag-t1'], '◐ First session');
   tab = { ...tab, named: false };
 }
 for (sort of ['priority', 'grouped']) {
@@ -72,46 +73,73 @@ for (sort of ['priority', 'grouped']) {
     const find = (node, id) => node && typeof node === 'object' && (node.idValue === id ? node : node._children?.map(x => find(x, id)).find(Boolean));
     const row = find(root, 'ag-t1');
     const listBox = find(root, 'ag-list');
-    assert.equal(listBox.calls.w[0], 268);
-    assert.equal(listBox.calls.min_w?.[0], 0);
-    assert.ok(row.calls.w_full && row.calls.min_w?.[0] === 0 && row.calls.on_click);
+    assert.equal(root.calls.on_size_change, undefined);
+    assert.equal(listBox.calls.w, undefined);
+    assert.equal(listBox.calls.mx, undefined);
+    assert.equal(listBox.calls.px[0], 8);
+    assert.ok(listBox.calls.flex_1 && listBox.calls.min_h[0] === 0 && listBox.calls.overflow_y_scrollbar);
+    assert.ok(row.calls.on_click);
     const textBox = row._children.find(x => x && typeof x === 'object' && x.calls.truncate);
     assert.ok(textBox.calls.flex_1 && textBox.calls.min_w?.[0] === 0 && textBox.calls.overflow_hidden);
-    assert.deepEqual(textBox._children, ['dev']);
-    const slot = row._children.at(-2);
-    assert.ok(slot.calls.flex_none);
-    assert.equal(slot.calls.w[0], 28);
-    assert.ok(slot._children[0]._children.includes('2m'));
+    assert.deepEqual(textBox._children, ['◐ First session']);
+    const time = row._children.at(-2);
+    assert.ok(time.calls.flex_none);
+    assert.equal(time.calls.w, undefined);
+    assert.ok(time._children.includes('2m'));
     app.hovered = 't1';
     const hovered = find(app.render({}), 'ag-t1');
     assert.equal(hovered._children.length, row._children.length);
-    assert.equal(hovered._children.at(-2).calls.w[0], slot.calls.w[0]);
     assert.equal(find(hovered, 'pin-t1').idValue, 'pin-t1');
-    assert.deepEqual(hovered._children.find(x => x?.calls?.truncate)._children, ['dev']);
+    assert.deepEqual(hovered._children.find(x => x?.calls?.truncate)._children, ['◐ First session']);
     assert.ok(row._children.at(-1).calls.flex_none);
   }
 }
 app.hovered = null;
 app.changed = {};
+for (const title of [' .config ', ' [P1] Session ', ' ◐ ']) {
+  ps[0].title = title;
+  assert.equal(rows()['ag-t1'], title.trim());
+}
+ps[0].title = '  ';
+assert.equal(rows()['ag-t1'], 'dev');
+ps[0].title = null;
+assert.equal(rows()['ag-t1'], 'dev');
 ps[0].cwd = '/';
 assert.equal(rows()['ag-t1'], '/');
 ps[0].cwd = null;
+assert.equal(rows()['ag-t1'], 'Klaude');
+list[0].program = null;
 assert.equal(rows()['ag-t1'], '-');
+list[0].program = program;
 ps[0].cwd = '/Users/test/code/dev';
-let notifications = 0;
-for (const width of [200, 420, 180]) {
+ps = ps.filter(p => p.pane !== 'p1');
+assert.equal(rows()['ag-t1'], 'Klaude');
+ps.unshift({ pane: 'p1', tab: 'different-tab', title: 'Wrong pane', cwd: '/wrong' });
+assert.equal(rows()['ag-t1'], 'Klaude');
+ps[0].tab = 'tab';
+list[0].status = 'working';
+ps[0].title = '◐ 很长的中文会话标题，用于检查状态图标仍保留空间';
+const find = (node, id) => node && typeof node === 'object' && (node.idValue === id ? node : node._children?.map(x => find(x, id)).find(Boolean));
+for (const width of [180, 200, 268, 420]) {
+  sidebarWidth = width;
   const root = app.render({});
-  root.calls.on_size_change[0]({ width, height: 300 }, { notify: () => notifications++ });
-  const listBox = app.render({})._children.find(x => x?.idValue === 'ag-list');
-  assert.equal(listBox.calls.w[0], width);
-  assert.equal(sidebarWidth, 268);
+  const listBox = find(root, 'ag-list');
+  assert.equal(listBox.calls.w, undefined);
+  assert.equal(root.calls.on_size_change, undefined);
+  const row = find(root, 'ag-t1');
+  assert.ok(row._children.find(x => x?.calls?.truncate).calls.min_w);
+  const spinner = row._children.at(-1);
+  assert.equal(spinner.calls.size[0], 12);
+  assert.ok(spinner.calls.flex_none && spinner.calls.spin);
 }
-assert.equal(notifications, 3);
-const root = app.render({});
-root.calls.on_size_change[0]({ width: 180, height: 400 }, { notify: () => notifications++ });
-assert.equal(notifications, 3);
+sidebarWidth = 76;
+const rail = find(app.render({}), 'ag-list');
+assert.equal(rail.calls.w, undefined);
+assert.equal(rail.calls.px[0], 0);
+sidebarWidth = 268;
+ps[0].title = '◐ First session';
 app.pins = [];
 ps = [{ ...ps[0], program: { key: 'other', name: 'Other', agent: true } }];
 list = [{ ...list[0], app: 'other', program: ps[0].program }];
-assert.doesNotMatch(rows()['ag-t1'], /First session/);
+assert.match(rows()['ag-t1'], /◐ First session/);
 console.log('Agents rendering passed.');

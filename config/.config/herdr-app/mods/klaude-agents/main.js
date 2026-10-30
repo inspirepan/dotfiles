@@ -164,7 +164,6 @@ export default class Agents extends View {
     const on = k.address === shown;
     return h_flex()
       .id(`sub-${k.address}`)
-      .w_full().min_w(0)
       .pl(39)
       .pr(8)
       .rounded(8)
@@ -180,7 +179,7 @@ export default class Agents extends View {
         .when(Boolean(l), el => el.border_l(1.5).border_color(t.input))
         .when(l === "└" || l === "├", el => el.border_b(1.5).rounded_bl(6))))
       .when(Boolean(pic), el => el.child(div().mr(8).child(pic)))
-      .child(div().flex_1().min_w(0).overflow_hidden().truncate().text_color(on ? t.foreground : t.muted).child(k.name || k.template || k.program?.name || k.address))
+      .child(div().flex_1().truncate().text_color(on ? t.foreground : t.muted).child(k.name || k.template || k.program?.name || k.address))
       .child(this.status(t, { status: st }, compact));
   }
 
@@ -231,7 +230,6 @@ export default class Agents extends View {
       const open = !this.folded.has(a.address);
       return div()
         .id(`fold-${a.address}`)
-        .flex_none()
         .h(18)
         .px(3)
         .gap(3)
@@ -255,8 +253,10 @@ export default class Agents extends View {
 
     const row = (a, i, subs = []) => {
       const pic = icon(a.program, 16, t.foreground);
-      const cwd = allPanes.find(p => p.pane === a.pane && p.tab === a.tab)?.cwd;
-      const name = cwd ? cwd.replace(/\/+$/, "").split("/").pop() || "/" : "-";
+      const pane = allPanes.find(p => p.pane === a.pane && p.tab === a.tab);
+      const cwd = pane?.cwd;
+      const title = (pane?.title ?? "").trim();
+      const name = title || (cwd ? cwd.replace(/\/+$/, "").split("/").pop() || "/" : a.program?.name || "-");
       // An agent on another machine (`vps/t7`) says which.
       const machine = a.address.includes("/") ? a.address.split("/")[0] : null;
       if (collapsed) {
@@ -294,7 +294,6 @@ export default class Agents extends View {
         .child(svg(`mods/workspace-chrome/${isPinned ? "pin-off" : "pin"}.svg`).size(13));
       return h_flex()
         .id(`ag-${a.address}`)
-        .w_full().min_w(0)
         .px(8)
         .h(30)
         .flex_none()
@@ -317,11 +316,10 @@ export default class Agents extends View {
             cx.notify();
           })).child(pic)))
         .child(div().flex_1().min_w(0).overflow_hidden().truncate().text_color(idle ? t.muted : t.foreground).child(name))
-        .when(Boolean(machine), el => el.child(div().flex_none().text_size(10).text_color(t.dim).child(machine)))
+        .when(Boolean(machine), el => el.child(div().text_size(10).text_color(t.dim).child(machine)))
         .when(subs.length > 0, el => el.child(fold(a, subs)))
-        .child(h_flex().w(28).flex_none().items_center().justify_center()
-          .when(this.hovered === a.address, el => el.child(pin))
-          .when(this.hovered !== a.address && Boolean(when), el => el.child(div().text_size(11).text_color(t.dim).child(duration(now - when)))))
+        .when(this.hovered === a.address, el => el.child(pin))
+        .when(this.hovered !== a.address && Boolean(when), el => el.child(div().flex_none().text_size(11).text_color(t.dim).child(duration(now - when))))
         .child(this.status(t, a, byPriority && !isPinned));
     };
 
@@ -341,7 +339,6 @@ export default class Agents extends View {
       const top = g.members.reduce((m, a) => ((RANK[a.status] ?? 0) > (RANK[m] ?? 0) ? a.status : m), null);
       return h_flex()
         .id(g.id)
-        .w_full().min_w(0)
         .px(8)
         .pt(8)
         .h(30)
@@ -356,7 +353,7 @@ export default class Agents extends View {
           open ? this.folded.add(g.id) : this.folded.delete(g.id);
           cx.notify();
         })
-        .child(div().min_w(0).overflow_hidden().truncate().text_color(t[g.status] ?? t.dim).child(g.label))
+        .child(div().truncate().text_color(t[g.status] ?? t.dim).child(g.label))
         .when(byPriority || !open, (el) => el.child(div().text_color(t.dim).child(String(g.members.length))))
         .child(div().flex_1())
         .when(!open, (el) => el
@@ -368,14 +365,8 @@ export default class Agents extends View {
       : groups.flatMap((g) => [header(g), ...(this.folded.has(g.id) ? [] : g.members.flatMap(withKids))]);
 
     return v_flex()
-      .id("agents-root")
       .size_full()
       .min_h(0)
-      .on_size_change((size, cx) => {
-        if (this.width === size.width) return;
-        this.width = size.width;
-        cx.notify();
-      })
       .bg(t.chrome)
       .border_t(1)
       .border_color(t.border)
@@ -406,7 +397,7 @@ export default class Agents extends View {
       .when(list.length === 0 && !collapsed, (el) =>
         el.child(div().px(12).text_size(12).text_color(t.dim).child("No agent status yet. Agents show up here when they report their status. Older versions and agents inside tmux may not.")),
       )
-      .child(v_flex().id("ag-list").w(this.width ?? find(layout(), "sidebar")?.size?.px ?? 0).min_w(0).flex_1().min_h(0).px(collapsed ? 0 : 8).overflow_y_scrollbar().mode("always").children(rows))
+      .child(v_flex().id("ag-list").flex_1().min_h(0).px(collapsed ? 0 : 8).overflow_y_scrollbar().mode("always").children(rows))
       .child(
         h_flex()
           .h(28)

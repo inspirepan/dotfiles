@@ -10,6 +10,9 @@ ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location('klaude_agents', ROOT / 'updates/20261030-006-klaude-agent-title.py')
 step = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(step)
+title_spec = importlib.util.spec_from_file_location('agent_session_title', ROOT / 'updates/20261030-011-agent-session-title.py')
+title_step = importlib.util.module_from_spec(title_spec)
+title_spec.loader.exec_module(title_step)
 
 
 class KlaudeAgentsTests(unittest.TestCase):
@@ -52,3 +55,23 @@ class KlaudeAgentsTests(unittest.TestCase):
     @unittest.skipUnless(shutil.which('node'), 'Node.js is required')
     def test_real_render(self):
         subprocess.run(['node', str(ROOT / 'tests/herdr-agents-title.mjs')], check=True)
+
+    def test_session_title_step_checks_both_links_without_writing(self):
+        targets = []
+        for mod in ('klaude-agents', 'klaude-pane'):
+            self.assertFalse(title_step.check(ROOT, self.home))
+            target = self.home / f'.config/herdr-app/mods/{mod}/main.js'
+            target.parent.mkdir(parents=True)
+            target.symlink_to(ROOT / f'config/.config/herdr-app/mods/{mod}/main.js')
+            targets.append(target)
+        before = {p: p.lstat().st_mtime_ns for p in self.home.rglob('*')}
+        self.assertTrue(title_step.check(ROOT, self.home))
+        self.assertEqual(before, {p: p.lstat().st_mtime_ns for p in self.home.rglob('*')})
+        for target in targets:
+            source = target.resolve()
+            target.unlink()
+            target.write_bytes(source.read_bytes())
+            self.assertFalse(title_step.check(ROOT, self.home))
+            target.unlink()
+            target.symlink_to(source)
+        self.assertEqual(title_step.SUPERSEDES, ('20261030-009-agent-folder-label',))

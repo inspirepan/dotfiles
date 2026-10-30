@@ -19,4 +19,14 @@
 4. 审查与剩余事项
    - 两轮正确性审查确认的内置布局恢复、mod 链接漂移遗漏均已修复并回归验证；维护性审查无发现。
    - 实际重启保留效果未验证（遵守不重启约束）。
-   - 尚未提交或推送，另一台机器须在这些改动推送后拉取并执行指南中的更新及布局切换命令。
+   - 另一台机器拉取后须执行指南中的更新及布局切换命令。
+5. 当前阶段：通用终端标题已实现并验证
+   - 已确认：基于官方 Agents / pane，仅调整标题优先级；保留 menu、tabs 与个人 layout 引用，不改官方原件、不重启。
+   - `config/.config/herdr-app/mods/klaude-agents/main.js`：自身 pane 标题 trim → cwd 末级目录 → program.name → `-`；保留标点和状态符号，不依赖 tab 名称或其他 pane。
+   - Agents 恢复官方 flex 滚动容器、时间与 pin 行为，移除 `on_size_change`、`this.width` 和手算列表宽度。
+   - `config/.config/herdr-app/mods/klaude-pane/main.js`：相对官方仅增加所有 `program.agent` 的终端标题优先级，非 agent shell 沿用官方逻辑。
+   - `updates/20261030-011-agent-session-title.py` 检查两份 mod symlink，仅取代 009；旧步骤不变，未在本机登记 011。
+   - 已验证：`uv run --no-project python -m unittest discover -s tests -v`，46 项通过；本机两份 mod 均为指向仓库的 symlink。
+   - 原生验证：两份 mod 的 `herdr-app check` 通过；触发 symlink 入口热重载后，在 zoom 1.1、侧栏 180 / 440 设计像素下截图确认标题展示、窄栏截断及 spinner 完整可见；已通过 `layout.resize` 恢复原宽度 204，`herdr-app status` 的 `errors` 为空。
+   - 独立正确性审查无新增问题，并复跑 46 项测试通过；hover 仅有 mock 覆盖，未做原生鼠标验证，未重启。
+   - 下一步：其他设备拉取本次提交后运行设备更新；本次未执行全量 update，避免触发无关待执行步骤。
