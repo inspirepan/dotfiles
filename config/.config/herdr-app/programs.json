@@ -1,0 +1,10 @@
+{
+  "programs": {
+    "klaude": {
+      "name": "Klaude",
+      "icon": "icons/agent.svg",
+      "tint": true,
+      "run": ["klaude"]
+    }
+  }
+}

@@ -139,6 +139,8 @@ scripts/dotfiles.sh init
 - `~/.config/ghostty/themes/blue-light` -> `dotfiles/config/.config/ghostty/themes/blue-light`
 - `~/.config/ghostty/themes/blue-light-dark` -> `dotfiles/config/.config/ghostty/themes/blue-light-dark`
 - `~/.config/herdr/config.toml` -> `dotfiles/config/.config/herdr/config.toml`
+- `~/.config/herdr-app/{keys,settings,programs}.json` -> `dotfiles/config/.config/herdr-app/` 中的对应文件
+- `~/.config/herdr-app/themes/tokyo-night*.json` -> `dotfiles/config/.config/herdr-app/themes/` 中的对应主题
 - `~/.warp/themes/blue-light.yaml` -> `dotfiles/config/.warp/themes/blue-light.yaml`
 - `~/.warp/themes/blue-light-dark.yaml` -> `dotfiles/config/.warp/themes/blue-light-dark.yaml`
 - `~/.config/ripgrep/config` -> `dotfiles/config/.config/ripgrep/config`
@@ -172,6 +174,28 @@ Claude Code 与 Codex 共用 `claude/.claude/CLAUDE.md`；只修改这一份指�
 
 Claude Code 的 `settings.json` 不入库（会被频繁改写）；Phase 4 从无凭证模板合并 statusline、模型和插件偏好。
 Klaude YAML 仅保存模型选择与 provider 开关，禁止加入明文凭证。`/model` 修改可能同步到仓库，提交前检查差异。
+
+### Herdr app 跨设备配置
+
+`config/.config/herdr-app/` 维护快捷键、字体、提示音、Tokyo Night 自动深浅主题及 `+` 菜单的 Klaude 启动入口。
+`mods/klaude-menu` 和 `mods/klaude-tabs` 是内置菜单和标签栏的个人副本：Klaude 在已安装 agents 中排第一，其他顺序保留，`Cmd+1` 也对应 Klaude。内置 mod 不修改；升级时需自行对比上游变化。
+`Cmd+T` 新建标签页，`Cmd+N` 新建 space；旧的 `Cmd+Ctrl` 兼容快捷键已移除。关闭 space 使用菜单或命令面板。
+旧版 `herdr/config.toml` 保留不变。工作区、终端会话、窗口状态、`shared.json`、缓存及内置 mods/layouts/icons 不同步。003 从本机 002 修改后的 `main` 创建个人 `layouts/klaude.json`，保留本机布局其他内容及 `klaude-tabs` 引用，再从匹配的 002 备份逐字节恢复内置 `main`；生成的个人布局不入库。内置布局每次启动会被替换，不能用于持久化自定义。若 `main` 有额外修改或已有不同的 `klaude.json`，更新停止且不覆盖。
+
+另一台 Mac 先安装 Herdr app、Klaude 和配置所用的 TX-02 / Inter Variable 字体，启动一次 Herdr app 生成默认布局，再拉取 dotfiles 并执行：
+
+```bash
+cd ~/code/dotfiles
+scripts/dotfiles.sh status
+scripts/dotfiles.sh update
+# App 已运行时切换一次；由原生命令持久化布局选择，不重启 app/core。
+herdr-app do layout.switch '{"name":"klaude"}'
+```
+
+新设备仍使用 `scripts/dotfiles.sh init`。更新步骤先备份已有同名配置到 `~/.local/state/dotfiles/backups/herdr-app-*/`，再逐文件建立链接，不替换整个配置目录，也不重启 app 或 core。
+003 的迁移前文件保存在 `~/.local/state/dotfiles/backups/personal-herdr-layout-*/`，重复执行不再备份；003 登记完成后取代 002，避免后续更新重新修改内置 `main`。003 仅迁移布局文件，不修改 `shared.json`；每台机器在 app 已运行时执行一次上述原生切换命令，保留最新共享状态，不修改 space/tab/pane 运行内容。
+004 接管个人 mod 文件链接的检查；链接丢失或被替换时先备份本机文件再恢复，不再修改内置布局。
+今后修改仓库中的个人配置；如果 app 保存设置时将链接替换为普通文件，先比较需要保留的改动，再运行 `update` 恢复链接（本机文件会先备份）。
 
 ### 可选：公司自部署 GitLab
 

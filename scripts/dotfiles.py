@@ -47,10 +47,19 @@ def execute(repository, home, mode):
 
     def process():
         state = read_state(path)
-        for identifier, digest, step in steps(repository):
+        available = list(steps(repository))
+        superseded = set()
+        for identifier, digest, step in available:
             previous = state["completed"].get(identifier)
             if previous and previous["sha256"] != digest:
                 raise ValueError(f"已应用的更新被修改：{identifier}；请新增更新步骤")
+            if previous:
+                superseded.update(getattr(step, "SUPERSEDES", ()))
+        for identifier, digest, step in available:
+            if identifier in superseded:
+                print(f"已由后续步骤取代：{identifier} — {step.DESCRIPTION}", flush=True)
+                continue
+            previous = state["completed"].get(identifier)
             satisfied = step.check(repository, home)
             label = "已完成" if previous and satisfied else "可登记" if satisfied else "待执行"
             print(f"{label}：{identifier} — {step.DESCRIPTION}", flush=True)

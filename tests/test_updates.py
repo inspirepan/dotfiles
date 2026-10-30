@@ -76,6 +76,20 @@ class UpdateTests(unittest.TestCase):
         self.assertEqual(run.call_args.args[0][0], 'stow')
         self.assertTrue(json.loads((self.home / '.local/state/dotfiles/updates.json').read_text())['initialized'])
 
+    def test_completed_successor_prevents_old_behavior_even_when_successor_drifts(self):
+        old = self.step('001', "    (home / '001').touch()")
+        successor = self.step('002', "    (home / '001').unlink(missing_ok=True)\n    (home / '002').touch()")
+        successor.write_text(successor.read_text() + "SUPERSEDES = ('001',)\n")
+        self.run_updates()
+        self.run_updates()
+        self.assertFalse((self.home / '001').exists())
+        (self.home / '002').unlink()
+        self.run_updates()
+        self.assertFalse((self.home / '001').exists())
+        old.write_text(old.read_text() + '# changed\n')
+        with self.assertRaisesRegex(ValueError, '已应用的更新被修改'):
+            self.run_updates()
+
     def shared_source(self):
         source = self.repo / 'claude/.claude/CLAUDE.md'
         source.parent.mkdir(parents=True)
