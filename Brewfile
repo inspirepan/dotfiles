@@ -42,7 +42,6 @@ brew "rust"
 brew "yt-dlp"
 brew "cloudflared"
 brew "duti"
-brew "terminal-notifier"     # Herdr macOS system notifications
 brew "poppler"               # PDF inspection and rendering
 brew "summarize"             # Summarize URLs and local files
 brew "mole"                  # macOS maintenance

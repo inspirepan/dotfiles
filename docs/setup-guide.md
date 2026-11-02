@@ -89,14 +89,7 @@ brew bundle --file=~/code/dotfiles/Brewfile
 ```
 
 其中也会安装 `fzf` 和 `neovim`，供 `fb` 做上下键交互选文件并直接进入只读查看；还会安装
-`poppler`（PDF 查看 / 渲染）、`summarize` 和 `mole`，以及菜单栏用量查看工具 CodexBar（`codexbar`）。已有设备运行 `scripts/dotfiles.sh update` 补装 CodexBar。`terminal-notifier` 用于 Herdr 的可选系统通知，单独安装时使用：
-
-```bash
-brew install terminal-notifier
-```
-
-当前 Herdr 配置使用 `delivery = "terminal"`。若改为 `delivery = "system"` 却没有 `terminal-notifier`，
-通知会回退到 `osascript`，可能显示为来自 Script Editor。
+`poppler`（PDF 查看 / 渲染）、`summarize` 和 `mole`，以及菜单栏用量查看工具 CodexBar（`codexbar`）。已有设备运行 `scripts/dotfiles.sh update` 补装 CodexBar。
 
 以下包需要 sudo 安装 pkg，agent 无法自动执行，需手动在终端运行：
 
@@ -239,10 +232,6 @@ uv python install 3.14 --default
 
 # bun（JavaScript）
 curl -fsSL https://bun.com/install | bash
-
-# Herdr terminal workspace manager
-curl -fsSL https://herdr.dev/install.sh | sh
-herdr --version
 
 # jj-hunk for splitting mixed files in the commit skill
 cargo install jj-hunk
