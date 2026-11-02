@@ -8,5 +8,19 @@
     "#70b8e8", "#d0a0d0", "#60d0d8", "#e0e5f0",
     "#606060", "#ff6080", "#70e090", "#ffe090",
     "#88c8f0", "#e0b0e8", "#78e0e8", "#f0f0f0"
-  ]
+  ],
+  "colors": {
+    "chrome": "#101016",
+    "canvas": "#101016",
+    "surface": "#1A1B20",
+    "popover": "#1A1B20",
+    "raised": "#25262D",
+    "hover": "#292A30",
+    "selected": "#30323A",
+    "border": "#303139",
+    "input": "#4B4C55",
+    "muted": "#AAAAAA",
+    "dim": "#909096",
+    "accent": "#70B8E8"
+  }
 }

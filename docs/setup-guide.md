@@ -178,7 +178,7 @@ Klaude YAML 仅保存模型选择与 provider 开关，禁止加入明文凭证�
 ### Herdr app 跨设备配置
 
 `config/.config/herdr-app/` 维护快捷键、字体、提示音、Blue Light 自动深浅主题及 `+` 菜单的 Klaude 启动入口。
-`themes/blue-light.json` 和 `themes/blue-light-dark.json` 的终端颜色与 Ghostty 同名主题一致；界面颜色由 Herdr 派生，不同步 Ghostty 的透明度和模糊设置。
+`themes/blue-light.json` 和 `themes/blue-light-dark.json` 的终端颜色与 Ghostty 同名主题一致；界面颜色参考 Blue Light VS Code 主题，不同步 Ghostty 的透明度和模糊设置。
 `mods/klaude-menu` 和 `mods/klaude-tabs` 是内置菜单和标签栏的个人副本：Klaude 在已安装 agents 中排第一，其他顺序保留，`Cmd+1` 也对应 Klaude。内置 mod 不修改；升级时需自行对比上游变化。
 `mods/klaude-agents` 是内置 agents 的个人副本，所有 agent 优先显示自身终端的 OSC 0/2 标题，只去除首尾空白，保留标点和状态符号；不读取同 tab 其他 pane 的标题或 tab 名称。无标题时依次回退到当前文件夹名、程序名、`-`。
 Agents 沿用官方 flex 滚动容器，不测量或手算列表宽度；状态、排序、子 agent、时间与 hover 图钉交互沿用官方实现。
