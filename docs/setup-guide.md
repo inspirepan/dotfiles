@@ -185,6 +185,7 @@ Agents 沿用官方 flex 滚动容器，不测量或手算列表宽度；状态�
 `mods/klaude-pane` 是内置 pane 的个人副本，所有 `program.agent` 优先显示自身终端标题；非 agent shell 保持官方程序名逻辑。两份 mod 保留原名称以兼容个人 layout，升级后需手动对比并合并上游更新。
 `Cmd+T` 新建标签页，`Cmd+N` 新建 space；旧的 `Cmd+Ctrl` 兼容快捷键已移除。关闭 space 使用菜单或命令面板。
 `Cmd+K` 向当前终端发送 `Ctrl+L`，与 Ghostty 配置一致；具体清屏行为由运行中的程序决定，不保证清空滚动历史。
+个人 `klaude` 布局的激活边框宽 1 像素，颜色使用主题的 `selection`；与普通边框等宽，避免切换焦点时改变 pane 尺寸。
 旧版 `herdr/config.toml` 保留不变。工作区、终端会话、窗口状态、`shared.json`、缓存及内置 mods/layouts/icons 不同步。003 从本机 002 修改后的 `main` 创建个人 `layouts/klaude.json`，保留本机布局其他内容及 `klaude-tabs` 引用，再从匹配的 002 备份逐字节恢复内置 `main`；生成的个人布局不入库。内置布局每次启动会被替换，不能用于持久化自定义。若 `main` 有额外修改或已有不同的 `klaude.json`，更新停止且不覆盖。
 
 另一台 Mac 先安装 Herdr app、Klaude 和配置所用的 TX-02-Variable / Geist 字体（字号 14、缩放 1.1），启动一次 Herdr app 生成默认布局，再拉取 dotfiles 并执行：
@@ -202,6 +203,7 @@ herdr-app do layout.switch '{"name":"klaude"}'
 004 接管个人 mod 文件链接的检查；链接丢失或被替换时先备份本机文件再恢复，不再修改内置布局。
 006 备份个人布局并将其中的 agents 切换为个人副本，逐文件维护 mod 链接；缺少布局或 agents 块不匹配时停止，不修改 `main` 或 `shared.json`。
 007 备份个人布局并将 pane header 切换为个人副本，逐文件维护 mod 链接；缺少布局或 header 冲突时停止，不修改 `main` 或 `shared.json`。
+004（20261102）备份个人布局并调整激活边框；若个人边框或 Herdr 的布局运行时状态与目标冲突则停止，保留原内容。
 今后修改仓库中的个人配置；如果 app 保存设置时将链接替换为普通文件，先比较需要保留的改动，再运行 `update` 恢复链接（本机文件会先备份）。
 
 ### 可选：公司自部署 GitLab

@@ -32,7 +32,7 @@ class InitializationTests(unittest.TestCase):
             shutil.copytree(ROOT / 'config/.config/herdr-app', repo / 'config/.config/herdr-app')
             layout = home / '.config/herdr-app/layouts/main.json'
             layout.parent.mkdir(parents=True)
-            layout.write_text('{"children":[{"content":{"mod":"tabs"}},{"id":"agents","content":{"mod":"agents"}},{"content":{"pane":{"header":{"content":{"mod":"pane"}}}}}]}')
+            layout.write_text('{"children":[{"content":{"mod":"tabs"}},{"id":"agents","content":{"mod":"agents"}},{"content":{"tab":"active","pane":{"focus":{"width":1,"color":"accent"},"header":{"content":{"mod":"pane"}}}}}]}')
             original_layout = layout.read_bytes()
             karabiner = repo / 'config/.config/karabiner/karabiner.json'
             karabiner.parent.mkdir(parents=True)
@@ -95,7 +95,7 @@ class InitializationTests(unittest.TestCase):
                 self.assertEqual(sorted((home / '.local/state/dotfiles/backups').iterdir()), backups)
             self.assertEqual(layout.read_bytes(), original_layout)
             self.assertEqual(json.loads(layout.with_name('klaude.json').read_text()),
-                             {'children': [{'content': {'mod': 'klaude-tabs'}}, {'id': 'agents', 'content': {'mod': 'klaude-agents'}}, {'content': {'pane': {'header': {'content': {'mod': 'klaude-pane'}}}}}]})
+                             {'children': [{'content': {'mod': 'klaude-tabs'}}, {'id': 'agents', 'content': {'mod': 'klaude-agents'}}, {'content': {'tab': 'active', 'pane': {'focus': {'width': 1, 'color': 'selection'}, 'header': {'content': {'mod': 'klaude-pane'}}}}}]})
             state = json.loads((home / '.local/state/dotfiles/updates.json').read_text())
             self.assertTrue(state['initialized'])
             self.assertEqual(len(state['completed']), len(list((repo / 'updates').glob('[0-9]*.py'))))
