@@ -18,7 +18,5 @@ web_search:
     api_key: ${DEEPSEEK_API_KEY}
     base_url: https://api.deepseek.com
 provider_list:
-- provider_name: opencode-go-responses
-  disabled: true
 - provider_name: openrouter
   disabled: true

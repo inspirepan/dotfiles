@@ -1,11 +1,11 @@
 {
-  "zoom": 1.1,
+  "zoom": 1,
   "sounds": {
     "enabled": true
   },
-  "font": "TX-02-Variable",
+  "font": "Paper Mono",
   "font_size": 14,
-  "ui_font": "Geist",
+  "ui_font": "Inter",
   "minimum_contrast": 1,
   "theme": {
     "light": "blue-light",
