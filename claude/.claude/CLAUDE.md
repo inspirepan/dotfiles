@@ -22,6 +22,9 @@ Keep design docs very concise; match the style of the user's own outlines
 - Before handing off or switching sessions, write important decisions, verified progress, unresolved issues, relevant paths, and the exact next action into the task document. Do not rely on chat history being available.
 - Research or planning alone does not authorize implementation. Existing authorization to implement remains valid across phases; do not add repetitive approval gates.
 
+# Scope and Complexity
+Before adding complexity for a speculative or vanishingly unlikely race or security edge case, explain the concrete failure mode, likelihood, and complexity cost to the user and get their buy-in. Do not silently expand scope for theoretical robustness.
+
 # Python Package Management
 ONLY use uv for scripts and new projects, NEVER pip
 Installation: uv add package
