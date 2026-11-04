@@ -6,5 +6,8 @@
 4. 配置正文保持在 Stow 包或清单内。检查使用当前目标配置；入口漂移或清单升级会重新应用。
 5. 已有同名个人 Skill 保留并报冲突；先比较、明确处理，再重试。不要标记冲突为完成。
 6. 后续步骤可用 `SUPERSEDES = ("旧步骤名",)` 取代旧行为；后续步骤登记完成后，更新器不再检查或重做旧步骤，仍校验所有已应用步骤的正文哈希。
+7. 新增步骤时在 `components.json` 登记组件；已发布步骤正文不因分类而修改。组件内按原顺序执行，前置步骤和取代步骤应归属同一组件。
 
 记录：`~/.local/state/dotfiles/updates.json`，不入库。不自动回滚已成功的步骤。
+
+按组件运行：`scripts/dotfiles.sh status --component herdr` 或 `scripts/dotfiles.sh update --component herdr`。可选 `agents`、`karabiner`、`codexbar`、`herdr`，可重复指定；不指定仍全量运行，`init` 不支持筛选。只检查、应用和登记所选组件，但仍校验所有已应用步骤的正文哈希。

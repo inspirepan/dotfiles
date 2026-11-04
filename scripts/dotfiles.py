@@ -41,13 +41,21 @@ def steps(repository):
         yield path.stem, hashlib.sha256(path.read_bytes()).hexdigest(), module
 
 
-def execute(repository, home, mode):
+def execute(repository, home, mode, components=()):
+    if components and mode == "init":
+        raise ValueError("init 不支持组件筛选，请使用 status 或 update")
+    grouping = json.loads((repository / "updates/components.json").read_text()) if components else {}
+    unknown = set(components) - set(grouping.values())
+    if unknown:
+        raise ValueError(f"未知组件：{', '.join(sorted(unknown))}")
     state_dir = home / ".local/state/dotfiles"
     path = state_dir / "updates.json"
 
     def process():
         state = read_state(path)
         available = list(steps(repository))
+        if components and set(grouping) != {identifier for identifier, _, _ in available}:
+            raise ValueError("组件清单与更新步骤不一致，请检查 updates/components.json")
         superseded = set()
         for identifier, digest, step in available:
             previous = state["completed"].get(identifier)
@@ -56,6 +64,8 @@ def execute(repository, home, mode):
             if previous:
                 superseded.update(getattr(step, "SUPERSEDES", ()))
         for identifier, digest, step in available:
+            if components and grouping[identifier] not in components:
+                continue
             if identifier in superseded:
                 print(f"已由后续步骤取代：{identifier} — {step.DESCRIPTION}", flush=True)
                 continue
@@ -89,10 +99,18 @@ def execute(repository, home, mode):
 
 
 def main():
+    repository = Path(__file__).resolve().parents[1]
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("mode", choices=["status", "update", "init"])
+    parser.add_argument(
+        "--component", action="append", default=[],
+        choices=sorted(set(json.loads((repository / "updates/components.json").read_text()).values())),
+        help="仅处理指定组件，可重复指定；不支持 init",
+    )
     args = parser.parse_args()
-    execute(Path(__file__).resolve().parents[1], Path.home(), args.mode)
+    if args.mode == "init" and args.component:
+        parser.error("init 不支持 --component，请使用 status 或 update")
+    execute(repository, Path.home(), args.mode, args.component)
 
 
 if __name__ == "__main__":

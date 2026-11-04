@@ -2,6 +2,8 @@
 
 - 新设备：按本指南安装前置工具；安装好 uv、Node.js（含 npx）、GNU Stow 后，Phase 3 执行 `scripts/dotfiles.sh init`，创建 Stow 链接并验证当前更新；继续其余手动配置。
 - 已有设备：先拉取 dotfiles，再执行 `scripts/dotfiles.sh status`、`scripts/dotfiles.sh update`。
+- 单独检查或更新：`scripts/dotfiles.sh status --component herdr`、`scripts/dotfiles.sh update --component herdr`；可选 `agents`（共享指令与技能）、`karabiner`、`codexbar`、`herdr`，可重复指定 `--component`。
+- 不指定组件仍全量运行；`init` 不支持组件筛选。各组件共用本机记录 `~/.local/state/dotfiles/updates.json`，不入库。
 - 更新按 `updates/` 文件顺序运行；每台机器独立保存验证记录；失败停在当前步骤，解决后原命令重试。
 - Claude / Codex 共用 MD 已列为首个步骤；遇到有不同内容的本机 MD 会停止，合并后重试，不覆盖。
 - 新增配置变化时同时新增更新步骤，格式见 `updates/README.md`。

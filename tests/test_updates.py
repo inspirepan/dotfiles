@@ -35,9 +35,9 @@ class UpdateTests(unittest.TestCase):
         self.env.start()
         self.addCleanup(self.env.stop)
 
-    def run_updates(self, mode='update'):
+    def run_updates(self, mode='update', components=()):
         with contextlib.redirect_stdout(io.StringIO()):
-            runner.execute(self.repo, self.home, mode)
+            runner.execute(self.repo, self.home, mode, components)
 
     def step(self, name, body):
         path = self.repo / 'updates' / f'{name}.py'
@@ -68,6 +68,82 @@ class UpdateTests(unittest.TestCase):
         step.write_text(step.read_text() + '# changed\n')
         with self.assertRaisesRegex(ValueError, '已应用的更新被修改'):
             self.run_updates()
+
+    def test_component_isolation_multiple_selection_and_shared_progress(self):
+        blocked = self.step('001', "    raise RuntimeError('unrelated conflict')")
+        blocked.write_text(blocked.read_text().replace(
+            "    return (home / '001').exists()", "    raise RuntimeError('unrelated conflict')"))
+        self.step('002', "    (home / '002').touch()")
+        self.step('003', "    (home / '003').touch()")
+        (self.repo / 'updates/components.json').write_text(json.dumps({
+            '001': 'agents', '002': 'herdr', '003': 'karabiner',
+        }))
+        self.run_updates('status', ['herdr'])
+        self.assertFalse((self.home / '.local').exists())
+        self.run_updates(components=['herdr'])
+        before = (self.home / '002').stat().st_mtime_ns
+        self.assertFalse((self.home / '003').exists())
+        self.run_updates(components=['herdr', 'karabiner'])
+        self.assertEqual((self.home / '002').stat().st_mtime_ns, before)
+        state = json.loads((self.home / '.local/state/dotfiles/updates.json').read_text())
+        self.assertEqual(list(state['completed']), ['002', '003'])
+        with self.assertRaisesRegex(RuntimeError, 'unrelated conflict'):
+            self.run_updates()
+
+    def test_component_failure_resumes_and_keeps_global_hash_checks(self):
+        other = self.step('001', "    (home / '001').touch()")
+        self.step('002', "    (home / '002').touch()")
+        successor = self.step('003', "    if not (home / 'ready').exists():\n        raise RuntimeError('not ready')\n    (home / '002').unlink(missing_ok=True)\n    (home / '003').touch()")
+        successor.write_text(successor.read_text() + "SUPERSEDES = ('002',)\n")
+        (self.repo / 'updates/components.json').write_text(json.dumps({
+            '001': 'agents', '002': 'herdr', '003': 'herdr',
+        }))
+        self.run_updates(components=['agents'])
+        with self.assertRaisesRegex(RuntimeError, 'not ready'):
+            self.run_updates(components=['herdr'])
+        state = json.loads((self.home / '.local/state/dotfiles/updates.json').read_text())
+        self.assertEqual(list(state['completed']), ['001', '002'])
+        (self.home / 'ready').touch()
+        self.run_updates(components=['herdr'])
+        self.run_updates(components=['herdr'])
+        self.assertFalse((self.home / '002').exists())
+        self.assertTrue((self.home / '003').exists())
+        other.write_text(other.read_text() + '# changed\n')
+        with self.assertRaisesRegex(ValueError, '已应用的更新被修改'):
+            self.run_updates(components=['herdr'])
+
+    def test_invalid_component_selection_is_rejected(self):
+        self.step('001', "    (home / '001').touch()")
+        manifest = self.repo / 'updates/components.json'
+        manifest.write_text(json.dumps({'001': 'herdr'}))
+        with self.assertRaisesRegex(ValueError, '未知组件'):
+            self.run_updates(components=['missing'])
+        with self.assertRaisesRegex(ValueError, 'init 不支持'):
+            self.run_updates('init', ['herdr'])
+        self.assertFalse((self.home / '.local').exists())
+        manifest.write_text(json.dumps({'missing': 'herdr'}))
+        with self.assertRaisesRegex(ValueError, '组件清单与更新步骤不一致'):
+            self.run_updates(components=['herdr'])
+        self.assertFalse((self.home / '001').exists())
+
+    def test_repository_components_cover_steps_and_superseded_steps(self):
+        grouping = json.loads((ROOT / 'updates/components.json').read_text())
+        available = list(runner.steps(ROOT))
+        self.assertEqual(set(grouping), {identifier for identifier, _, _ in available})
+        for identifier, _, step in available:
+            for previous in getattr(step, 'SUPERSEDES', ()):
+                self.assertEqual(grouping[identifier], grouping[previous])
+
+    def test_cli_component_selection_and_rejected_arguments(self):
+        with patch.object(runner.sys, 'argv', ['dotfiles', 'status', '--component', 'herdr', '--component', 'agents']), patch.object(runner, 'execute') as execute:
+            runner.main()
+        execute.assert_called_once_with(ROOT, Path.home(), 'status', ['herdr', 'agents'])
+        for arguments in (['init', '--component', 'herdr'], ['update', '--component', 'missing']):
+            with self.subTest(arguments=arguments), patch.object(runner.sys, 'argv', ['dotfiles', *arguments]), patch.object(runner, 'execute') as execute, contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit) as stopped:
+                    runner.main()
+                self.assertEqual(stopped.exception.code, 2)
+                execute.assert_not_called()
 
     def test_init_runs_stow_after_updates(self):
         self.step('001', "    (home / '001').touch()")
