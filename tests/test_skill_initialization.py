@@ -51,7 +51,7 @@ class InitializationTests(unittest.TestCase):
             names = {name for source in sources for name in source['enabled']}
             self.assertEqual(len(config['enabled']), 9)
             self.assertIn('commit', config['enabled'])
-            self.assertEqual(len(names), 34)
+            self.assertEqual(len(names), 38)
             calls = []
             brew_installed = False
             brew_installs = []
@@ -75,17 +75,30 @@ class InitializationTests(unittest.TestCase):
                 calls.append(source['repository'])
                 lock = home / '.agents/.skill-lock.json'
                 records = json.loads(lock.read_text()) if lock.exists() else {'skills': {}}
-                for name in command[command.index('--skill') + 1:-2]:
+                selected = command[command.index('--skill') + 1:command.index('--yes', 2)]
+                self.assertEqual(selected, source['enabled'])
+                self.assertNotIn('--all', command)
+                self.assertNotIn('*', command)
+                for name in selected:
                     target = home / '.agents/skills' / name
                     target.mkdir(parents=True)
                     (target / 'SKILL.md').write_text('installed')
                     client = home / '.claude/skills' / name
                     client.parent.mkdir(parents=True, exist_ok=True)
                     client.symlink_to(target)
-                    records['skills'][name] = {'source': source['repository']}
+                    if source['repository'] == installer.LARK_SOURCE:
+                        self.assertNotIn('--json', command)
+                        records['skills'][name] = {
+                            'source': 'open.feishu.cn', 'sourceType': 'well-known',
+                            'sourceBaseUrl': source['repository'],
+                            'sourceUrl': f"{source['repository']}/.well-known/agent-skills/{name}.tar.gz",
+                        }
+                    else:
+                        self.assertIn('--json', command)
+                        records['skills'][name] = {'source': source['repository']}
                 lock.write_text(json.dumps(records))
                 return subprocess.CompletedProcess(command, 0, stdout='', stderr='')
-            with patch.dict(os.environ, {'XDG_STATE_HOME': '', 'CLAUDE_CONFIG_DIR': str(home / '.claude')}), patch.object(subprocess, 'run', side_effect=run):
+            with patch.dict(os.environ, {'HOME': str(home), 'PATH': os.environ['PATH'], 'XDG_STATE_HOME': '', 'CLAUDE_CONFIG_DIR': str(home / '.claude')}, clear=True), patch.object(subprocess, 'run', side_effect=run):
                 runner.execute(repo, home, 'init')
                 installed_count = len(calls)
                 backups = sorted((home / '.local/state/dotfiles/backups').iterdir())

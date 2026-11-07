@@ -40,7 +40,7 @@
 
 ## 共享技能与设备更新
 
-- 自写／改写技能正文在 `inspirepan/agent-skills`（含 commit）；第三方正文只在上游。9 项自有与 25 项第三方统一由 `npx skills` 安装更新，跟上游最新版；dotfiles 只维护来源和启用项，不存技能正文、不锁提交。
+- 自写／改写技能正文在 `inspirepan/agent-skills`（含 commit）；第三方正文只在上游。9 项自有与 29 项第三方（共 38 项）统一由 `npx skills` 安装更新，跟上游最新版；dotfiles 只维护来源和启用项，不存技能正文、不锁提交。
 - `scripts/setup-skills.sh --check` 仅检查本地来源、布局和旧 SHA ref，不联网承诺已是最新；已有个人内容保留并返回 2，不得将冲突标为已完成。
 - 日常升级运行 `npx skills update -g -y`；新增启用项或迁移来源运行 `scripts/setup-skills.sh --update`。`dotfiles update` 只应用设备步骤，不强制刷新已完成项。
 - 新设备按安装指南运行 `scripts/dotfiles.sh init`；已有设备拉取后运行 `status` 和 `update`。
@@ -51,3 +51,5 @@
 - 同名技能只能启用一个来源；明确切换来源时使用 `replaces` 声明原仓库，只有原生锁中归属一致的普通安装目录可迁移；独立个人内容保持冲突。
 - 唯一旧链接例外：commit 的共享 symlink 精确解析到当前仓库 `skills/commit`（允许悬空），Claude 入口缺失或 symlink 解析到同一目标，且没有外来锁归属时，安装器先移动链接到 `~/.local/state/dotfiles/backups/` 再安装。006 承载启用，001..005 不改写；`--check` 不备份、不写入。
 - 第三方通用能力优先使用 Anthropic 官方源；用户点名的 Emil、Jakub 前端技能保留作者上游。Emil 当前只启用四项，具体列表以清单为准。
+- 2026-11-07 精简仅移除全局 `playwright`、`unslop`、`ketchup-video`、`no-comments`、`make-bot-ui`；保留 `poteto-mode`、`bro`、`in-your-own-words` 和全部 `principle-*`。新增设备步骤仅卸载上游锁归属匹配的受管安装，个人内容保留；`submit-pr` 仅在 `klaude-code` 项目卸载，不属于 dotfiles 全局更新范围。
+- 飞书官方来源 `https://open.feishu.cn/lark-cli/skills/regular` 只启用 `lark-doc`、`lark-wiki`、`lark-whiteboard`、`lark-drive`、`lark-shared`；安装始终显式传入启用项，禁止整套安装。`20261107-002-lark-document-skills` 按清单保留集合清理同一 well-known 来源的其他受管 `lark-*`，保留外来来源和无锁个人安装；独立客户端内容阻止删除。其他设备运行 `scripts/dotfiles.sh update --component agents`。

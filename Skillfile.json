@@ -14,6 +14,16 @@
   ],
   "sources": [
     {
+      "repository": "https://open.feishu.cn/lark-cli/skills/regular",
+      "enabled": [
+        "lark-doc",
+        "lark-wiki",
+        "lark-whiteboard",
+        "lark-drive",
+        "lark-shared"
+      ]
+    },
+    {
       "repository": "emilkowalski/skills",
       "enabled": [
         "emil-design-eng",
@@ -78,15 +88,6 @@
         "frontend-design",
         "pdf",
         "skill-creator"
-      ],
-      "replaces": [
-        "inspirepan/agent-skills"
-      ]
-    },
-    {
-      "repository": "openai/skills",
-      "enabled": [
-        "playwright"
       ],
       "replaces": [
         "inspirepan/agent-skills"

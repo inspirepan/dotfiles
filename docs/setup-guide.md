@@ -343,7 +343,7 @@ vsce package
 
 第三方技能用途与来源见 [第三方技能目录](third-party-skills.md)。旧清单、Jakub better 系列、精简后的 Emil 四项均已纳入初始化和增量更新，直接从上游安装。
 
-`inspirepan/agent-skills` 只维护自写和持续改写的技能（含 `commit`）；第三方正文保留在各自上游。`Skillfile.json` 的顶层记录 9 项自有技能，`sources` 记录 25 项第三方技能；只维护来源、启用列表与 `replaces`，不锁提交。全部 34 项统一通过最新版 Vercel Skills CLI 跟上游更新，下载、共享目录、Agent 链接与安装记录均由 CLI 管理。commit 正文迁出后，dotfiles 不再存技能正文。第三方通用能力优先使用 Anthropic 官方源。
+`inspirepan/agent-skills` 只维护自写和持续改写的技能（含 `commit`）；第三方正文保留在各自上游。`Skillfile.json` 的顶层记录 9 项自有技能，`sources` 记录 29 项第三方技能；只维护来源、启用列表与 `replaces`，不锁提交。全部 38 项统一通过最新版 Vercel Skills CLI 跟上游更新，下载、共享目录、Agent 链接与安装记录均由 CLI 管理。commit 正文迁出后，dotfiles 不再存技能正文。第三方通用能力优先使用 Anthropic 官方源。
 
 ```bash
 ~/code/dotfiles/scripts/setup-skills.sh --check
@@ -355,13 +355,16 @@ npx skills update -g -y
 ```
 
 - Codex / klaude 读取 `~/.agents/skills/`；Claude Code 使用 CLI 建立的链接。
-- 安装调用 `npx --yes skills@latest add <owner/repo> --global --agent codex claude-code --skill <启用项> --yes --json`。
+- GitHub 安装调用 `npx --yes skills@latest add <owner/repo> --global --agent codex claude-code --skill <启用项> --yes --json`；飞书官方 well-known 来源使用同样的显式技能选择，省略不支持的 `--json`。
 - 同步前检查已有目录与原生 `.skill-lock.json`；同名个人目录、独立 Claude 内容、断链保留，退出码 2，阻止增量步骤登记完成。
 - 唯一旧链接例外是 `commit`：共享入口必须是精确解析到当前仓库 `skills/commit` 的 symlink，Claude 入口缺失或 symlink 解析到同一目标，且无外来锁归属。即使正文已随拉取删除也可迁移；安装前用 `shutil.move` 备份链接到 `~/.local/state/dotfiles/backups/` 唯一目录并打印路径，不删除个人内容。备份链接不包含正文；正文由上游维护。
 - 默认补齐缺项、迁移来源并解除旧 SHA ref；`--update` 即使已安装也刷新全部无冲突启用项。明确切换来源时用 `replaces` 声明原仓库，未登记或独立个人内容仍保留并报冲突。
 - `--check` 只读检查本地来源、布局与旧 SHA ref；不联网检查上游是否有更新，也不迁移旧链接。`dotfiles update` 只应用设备步骤，已完成步骤不因上游发布而强制重跑；005 承载解除锁定，006 承载 commit 启用，001..005 不改写。
 - 不直接编辑已安装副本；自有技能修改上游源码，日常统一运行 `npx skills update -g -y`，不再修改 SHA。
-- 从启用列表移除不会删除已安装技能；确需卸载时用 `npx skills remove` 明确选择技能与 Agent。
+- 安装器不会因启用列表缩小而卸载技能；定向设备清理步骤或手动 `npx skills remove` 明确选择技能与 Agent。
+- 2026-11-07 精简：设备步骤 `20261107-001-prune-global-skills` 仅移除全局 `playwright`（`openai/skills`）、`unslop`、`ketchup-video`、`no-comments`、`make-bot-ui`（后四项来自 `backnotprop/pstack`）。步骤固定已核对路径的 `skills@1.7.4`，仅卸载锁归属匹配的安装；其他来源或无锁记录的个人安装保留，独立个人入口报冲突。运行 `scripts/dotfiles.sh status --component agents`、`scripts/dotfiles.sh update --component agents` 检查并应用。
+- 保留 `poteto-mode`、`bro`、`in-your-own-words` 和全部 `principle-*`；这些保留决定不新增自动安装项。`submit-pr` 仅由 `klaude-code` 项目单独卸载，dotfiles 更新不操作项目技能。
+- 飞书官方来源 `https://open.feishu.cn/lark-cli/skills/regular` 只启用 `lark-doc`、`lark-wiki`、`lark-whiteboard`、`lark-drive`、`lark-shared`，禁止整套安装。新机 `scripts/dotfiles.sh init` 按此范围安装；已有设备运行 `scripts/dotfiles.sh status --component agents` 和 `scripts/dotfiles.sh update --component agents`，由 `20261107-002-lark-document-skills` 补齐缺项并清理同源未启用的受管 `lark-*`。无锁和其他来源目录保留，独立客户端内容阻止删除。
 - klaude 不再打包或自动安装技能；旧隐藏目录保留但不再发现。
 - 会话日志技能名为 `klaude-session-logs`；增量步骤通过原生 CLI 移除受管的旧 `session-logs`，个人同名内容保留。
 - 历史 003 仅为旧技能移除保留 `skills@1.7.4` 与当时的 Agent 列表；不参与新版技能安装，已发布步骤不改写。

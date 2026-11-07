@@ -13,6 +13,19 @@ import shutil
 import subprocess
 import tempfile
 
+LARK_SOURCE = "https://open.feishu.cn/lark-cli/skills/regular"
+
+
+def matches_source(repository, name, record):
+    if repository == LARK_SOURCE:
+        return (
+            record.get("source") == "open.feishu.cn"
+            and record.get("sourceType") == "well-known"
+            and record.get("sourceBaseUrl") == repository
+            and record.get("sourceUrl") == f"{repository}/.well-known/agent-skills/{name}.tar.gz"
+        )
+    return record.get("source") == repository
+
 
 def sources(config):
     return [config, *config.get("sources", [])]
@@ -26,8 +39,8 @@ def load_config(repository):
         raise ValueError("sources 必须是来源列表")
     seen = set()
     for source in sources(config):
-        if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", source["repository"]):
-            raise ValueError("repository 必须是 owner/repo")
+        if source["repository"] != LARK_SOURCE and not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", source["repository"]):
+            raise ValueError("repository 必须是 owner/repo 或飞书官方技能 URL")
         names = source["enabled"]
         if not isinstance(names, list) or any(
             not isinstance(name, str) or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", name) for name in names
@@ -67,7 +80,7 @@ def plan(repository, home):
         for name in source["enabled"]:
             canonical, client = shared / name, claude / name
             record = lock.get(name, {})
-            owned = record.get("source") in [source["repository"], *source.get("replaces", [])]
+            owned = any(matches_source(origin, name, record) for origin in [source["repository"], *source.get("replaces", [])])
             if (not record or owned) and legacy_commit(repository, source, name, canonical, client):
                 pending.append(name)
                 continue
@@ -79,7 +92,7 @@ def plan(repository, home):
             elif (
                 not (canonical / "SKILL.md").is_file()
                 or not (client / "SKILL.md").is_file()
-                or record.get("source") != source["repository"]
+                or not matches_source(source["repository"], name, record)
                 or re.fullmatch(r"[0-9a-fA-F]{40}", record.get("ref") or "")
             ):
                 pending.append(name)
@@ -108,7 +121,9 @@ def install(repository, home, check=False, update=False):
                     shutil.move(str(client), backup / "claude-link")
                 shutil.move(str(canonical), backup / "shared-link")
                 print(f"旧 commit 入口已备份：{backup}", flush=True)
-        command = ["npx", "--yes", "skills@latest", "add", source["repository"], "--global", "--agent", "codex", "claude-code", "--skill", *selected, "--yes", "--json"]
+        command = ["npx", "--yes", "skills@latest", "add", source["repository"], "--global", "--agent", "codex", "claude-code", "--skill", *selected, "--yes"]
+        if source["repository"] != LARK_SOURCE:
+            command.append("--json")
         result = subprocess.run(command, env={**os.environ, "HOME": str(home), "DO_NOT_TRACK": "1"}, capture_output=True, text=True)
         if result.returncode:
             raise RuntimeError(f"{source['repository']}：{result.stderr or result.stdout}")
