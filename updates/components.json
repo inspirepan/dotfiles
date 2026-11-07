@@ -27,5 +27,6 @@
   "20261103-001-remove-herdr-config": "herdr",
   "20261107-001-prune-global-skills": "agents",
   "20261107-002-lark-document-skills": "agents",
-  "20261113-001-response-style": "agents"
+  "20261113-001-response-style": "agents",
+  "20261118-001-prune-pstack-skills": "agents"
 }

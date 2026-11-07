@@ -51,7 +51,16 @@ class InitializationTests(unittest.TestCase):
             names = {name for source in sources for name in source['enabled']}
             self.assertEqual(len(config['enabled']), 9)
             self.assertIn('commit', config['enabled'])
-            self.assertEqual(len(names), 38)
+            self.assertEqual(len(names), 45)
+            self.assertEqual(set(by_repository['backnotprop/pstack']['enabled']), {
+                'principle-boundary-discipline',
+                'principle-explain-the-number',
+                'principle-fix-root-causes',
+                'principle-make-operations-idempotent',
+                'principle-prove-it-works',
+                'principle-test-behavior-not-implementation',
+                'principle-type-system-discipline',
+            })
             calls = []
             brew_installed = False
             brew_installs = []

@@ -67,7 +67,7 @@ dotfiles/
 
 **Commit skill**（`inspirepan/agent-skills`）：一个 Codex / Claude Code / klaude 的 [agent skill](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/claude-code-skills)，自动执行 `jj describe` / `jj split`，生成 Conventional Commit 格式的提交信息。它会检查工作区状态，推断出一个内聚的提交边界，干净地拆分变更。
 
-全部 34 项 skills（9 项自有、25 项第三方）在 `Skillfile.json` 中声明，由 `scripts/setup-skills.sh` 调用 `npx skills` 安装 / 刷新，
+全部 45 项 skills（9 项自有、36 项第三方）在 `Skillfile.json` 中声明，由 `scripts/setup-skills.sh` 调用 `npx skills` 安装 / 刷新，
 安装给 Codex / Claude Code，Klaude 读取共享目录。`commit` 同样跟随上游；006 迁移已知旧链接，先备份到 `~/.local/state/dotfiles/backups/`，独立个人内容保留并报冲突。
 
 ### Karabiner 按键映射

@@ -1,6 +1,6 @@
 # 第三方技能直接从上游安装
 
-第三方正文只由上游维护，不复制到 `agent-skills`。本页所列 29 个技能已在 `Skillfile.json` 启用，与自有来源 `inspirepan/agent-skills` 一样，通过 `npx skills` 安装更新、跟上游最新版；不锁提交。核对日期：2026-11-07。
+第三方正文只由上游维护，不复制到 `agent-skills`。本页所列 36 个技能已在 `Skillfile.json` 启用，与自有来源 `inspirepan/agent-skills` 一样，通过 `npx skills` 安装更新、跟上游最新版；不锁提交。核对日期：2026-11-18。
 
 ## 通用能力优先使用 Anthropic 官方源
 
@@ -100,9 +100,13 @@ npx --yes skills@latest add https://open.feishu.cn/lark-cli/skills/regular --glo
 ## 2026-11-07 精简五项其他全局技能
 
 - 移除 `playwright`（`openai/skills`）与 `unslop`、`ketchup-video`、`no-comments`、`make-bot-ui`（`backnotprop/pstack`）。清单中仅 `playwright` 原来启用，现删除整个 `openai/skills` 来源。
-- 保留 `poteto-mode`、`bro`、`in-your-own-words` 和全部 `principle-*`；保留决定不扩大 `Skillfile.json` 的自动安装范围。
 - 设备步骤 `20261107-001-prune-global-skills` 调用原生 `npx skills remove`，仅选择锁记录与上述上游匹配的技能。无记录或其他来源的个人安装保留；匹配锁但入口是个人内容时停止并报冲突。
 - `submit-pr` 仅在 `klaude-code` 项目卸载，由该项目单独处理；dotfiles 不操作项目技能。
+
+## pstack 只启用七条通用原则
+
+- 名称以 `Skillfile.json` 中 `backnotprop/pstack` 的启用清单为准。
+- `20261118-001-prune-pstack-skills` 清理已停用的 `poteto-mode`、17 条原则及七个工具入口。只选择锁归属为 `backnotprop/pstack` 的安装，先移入废纸篓，再用 `npx skills remove` 清理安装记录。
 
 ## 初始化按清单补齐，日常由原生 CLI 更新
 
@@ -112,7 +116,7 @@ npx --yes skills@latest add https://open.feishu.cn/lark-cli/skills/regular --glo
 - `scripts/setup-skills.sh` 默认补齐缺项、迁移已声明来源并解除旧 SHA ref；`--update` 刷新全部无冲突启用项；`--check` 只读检查本地来源与布局，不承诺已是上游最新。
 - 日常更新运行 `npx skills update -g -y`；有迁移来源或新增启用项时运行 `scripts/setup-skills.sh --update`。
 - 独立个人内容不会自动接管。未登记的旧目录先比较，再备份并切换；本机 Emil 的旧目录已按用户确认备份。
-- `commit` 由自有来源 `inspirepan/agent-skills` 安装，dotfiles 不再保留其重复正文；清单共 9 项自有、29 项第三方，共 38 项。
+- `commit` 由自有来源 `inspirepan/agent-skills` 安装，dotfiles 不再保留其重复正文；清单共 9 项自有、36 项第三方，共 45 项。
 - 仅已知旧 commit 共享 symlink 精确解析到当前仓库 `skills/commit`（允许悬空）、Claude 入口缺失或 symlink 解析到同一目标，且无外来锁归属时，才先移动链接到 `~/.local/state/dotfiles/backups/` 唯一目录再安装；备份路径会打印。独立个人内容保留，`--check` 只读。
 
 ## 清单只维护来源与启用项，不锁提交

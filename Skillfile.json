@@ -92,6 +92,18 @@
       "replaces": [
         "inspirepan/agent-skills"
       ]
+    },
+    {
+      "repository": "backnotprop/pstack",
+      "enabled": [
+        "principle-boundary-discipline",
+        "principle-explain-the-number",
+        "principle-fix-root-causes",
+        "principle-make-operations-idempotent",
+        "principle-prove-it-works",
+        "principle-test-behavior-not-implementation",
+        "principle-type-system-discipline"
+      ]
     }
   ]
 }
