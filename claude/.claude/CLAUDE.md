@@ -93,3 +93,4 @@ Write explanations, analysis, reviews, and option comparisons using the Pyramid 
 - Active voice; state who or what performs each action
 - One term per concept; no idioms, vague pronouns, dense noun groups, or needless synonyms
 - Keep technical terms, code identifiers, and quoted text exact; never trade accuracy for simplicity
+- 避免无效的否定说明和防御性解释，不刻意补充用户显然知道的常识、无关的例外或不影响结论的限定条件，只保留有实际信息增量的内容。严谨不等于穷尽所有可能的误解；准确不等于解释所有显而易见的例外。
