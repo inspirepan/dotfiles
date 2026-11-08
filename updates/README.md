@@ -3,7 +3,7 @@
 1. 新增 `YYYYMMDD-NNN-名称.py`，提供 `DESCRIPTION`、`check(repository, home)`、`apply(repository, home)`。
 2. `check` 只检查；`apply` 可重复执行，保留个人内容；验证成功才写本机记录。
 3. 已应用步骤不可改正文；下一次变化新增文件。步骤按文件名排序，失败立即停止。
-4. 配置正文保持在 Stow 包或清单内。检查使用当前目标配置；入口漂移或清单升级会重新应用。
+4. 配置正文保持在 Stow 包或清单内。`update/init` 使用当前目标配置检查；入口漂移或清单升级会重新应用。
 5. 已有同名个人 Skill 保留并报冲突；先比较、明确处理，再重试。不要标记冲突为完成。
 6. 后续步骤可用 `SUPERSEDES = ("旧步骤名",)` 取代旧行为；后续步骤登记完成后，更新器不再检查或重做旧步骤，仍校验所有已应用步骤的正文哈希。
 7. 新增步骤时在 `components.json` 登记组件；已发布步骤正文不因分类而修改。组件内按原顺序执行，前置步骤和取代步骤应归属同一组件。
@@ -11,3 +11,9 @@
 记录：`~/.local/state/dotfiles/updates.json`，不入库。不自动回滚已成功的步骤。
 
 按组件运行：`scripts/dotfiles.sh status --component herdr` 或 `scripts/dotfiles.sh update --component herdr`。可选 `agents`、`karabiner`、`codexbar`、`herdr`，可重复指定；不指定仍全量运行，`init` 不支持筛选。只检查、应用和登记所选组件，但仍校验所有已应用步骤的正文哈希。
+
+`check` 与 `status` 共用只读检查；默认显示待办、冲突和建议，无待办时一行输出，`--verbose` 显示完整结果（仅支持这两个命令）。已登记且正文哈希未变的步骤不再调用 `check`，显示“已登记（未复查）”，避免反复检查字体等偏好；未登记步骤仍检查，所有已登记步骤仍校验正文哈希。
+
+全量检查独立复用技能安装器的 `plan()` 检查本地归属与入口，并对现有包运行 `stow --simulate --verbose=1 --no-folding`，由 Stow 处理默认、全局、包内忽略规则及目录折叠链接。预演列出待 LINK/UNLINK 或冲突；缺少 GNU Stow 会报错。不安装、不修复、不写状态，不联网确认技能最新版。组件模式跳过 Stow 预演，仅选中 `agents` 时额外检查技能。发现待办或冲突仍可返回 0，检查失败则非零退出。
+
+检查工具本身的增强无需新增设备更新步骤；`init/update` 仍按原流程应用配置。

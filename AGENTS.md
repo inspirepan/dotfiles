@@ -25,7 +25,7 @@
 | `scripts/setup-omz.sh` | 安装 oh-my-zsh + 插件 + jj 主题 |
 | `scripts/macos-defaults.sh` | 通过 `defaults write` 设置 macOS 系统偏好 |
 | `scripts/setup-skills.sh` | 默认补齐和解除旧 SHA 锁定；`--update` 刷新全部无冲突技能；`--check` 只读检查 |
-| `scripts/dotfiles.sh` | `init` 初始化、`status` 检查、`update` 顺序增量更新 |
+| `scripts/dotfiles.sh` | `init` 初始化、`status/check` 只读检查、`update` 顺序增量更新 |
 | `updates/` | 已发布更新不可改写，新增步骤承载后续配置变化 |
 | `Skillfile.json` | 来源、启用列表与 `replaces` 声明 |
 | `docs/third-party-skills.md` | 第三方技能用途与来源；启用项以 Skillfile.json 为准 |
@@ -45,6 +45,7 @@
 - 日常升级运行 `npx skills update -g -y`；新增启用项或迁移来源运行 `scripts/setup-skills.sh --update`。`dotfiles update` 只应用设备步骤，不强制刷新已完成项。
 - 新设备按安装指南运行 `scripts/dotfiles.sh init`；已有设备拉取后运行 `status` 和 `update`。
 - 恢复维护时先运行 `scripts/dotfiles.sh status`，读取未完成步骤及其依赖；不要重复加载整份历史。
+- `status/check` 同义，默认仅显示待办、冲突与建议，无待办一行；`--verbose` 查看完整检查。已登记步骤仅校验正文哈希，显示“已登记（未复查）”，未登记步骤才调用 `check`；`update/init` 保持原流程。全量检查独立检查技能归属并调用 Stow 只读预演，遵守其忽略规则和目录折叠；组件模式跳过 Stow，选中 `agents` 时检查技能。检查不写状态、不安装，发现待办仍可返回 0；技能检查不联网确认最新版。
 - 每次影响设备配置的变化新增 `updates/` 步骤，不改写已发布步骤；见 `updates/README.md`。
 - 验证：`uv run --no-project python -m unittest discover -s tests -v`。
 

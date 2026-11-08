@@ -35,9 +35,10 @@ class UpdateTests(unittest.TestCase):
         self.env.start()
         self.addCleanup(self.env.stop)
 
-    def run_updates(self, mode='update', components=()):
-        with contextlib.redirect_stdout(io.StringIO()):
-            runner.execute(self.repo, self.home, mode, components)
+    def run_updates(self, mode='update', components=(), verbose=False):
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            runner.execute(self.repo, self.home, mode, components, verbose=verbose)
+        return output.getvalue()
 
     def step(self, name, body):
         path = self.repo / 'updates' / f'{name}.py'
@@ -68,6 +69,156 @@ class UpdateTests(unittest.TestCase):
         step.write_text(step.read_text() + '# changed\n')
         with self.assertRaisesRegex(ValueError, '已应用的更新被修改'):
             self.run_updates()
+
+    def test_status_and_check_are_identical_readonly_and_concise(self):
+        self.step('001', "    raise AssertionError('apply must not run')")
+        before = sorted(self.root.rglob('*'))
+        with patch.object(runner.subprocess, 'run') as run:
+            status = self.run_updates('status')
+            self.assertEqual(self.run_updates('check'), status)
+            self.assertIn('待执行：001', status)
+            self.assertIn('建议', status)
+            run.assert_not_called()
+        self.assertEqual(sorted(self.root.rglob('*')), before)
+
+    def test_default_hides_completed_and_superseded_verbose_shows_all(self):
+        self.step('001', "    (home / '001').touch()")
+        successor = self.step('002', "    (home / '002').touch()")
+        successor.write_text(successor.read_text() + "SUPERSEDES = ('001',)\n")
+        self.run_updates()
+        state = self.home / '.local/state/dotfiles/updates.json'
+        before = (state.read_bytes(), state.stat().st_mtime_ns)
+        for mode in ('status', 'check'):
+            with self.subTest(mode=mode):
+                self.assertEqual(self.run_updates(mode), '检查完成，无待办或冲突。\n')
+                output = self.run_updates(mode, verbose=True)
+                self.assertIn('已登记（未复查）：002', output)
+                self.assertIn('已由后续步骤取代：001', output)
+        self.assertEqual((state.read_bytes(), state.stat().st_mtime_ns), before)
+        state.unlink()
+        self.assertIn('可登记：002', self.run_updates('check'))
+
+    def test_registered_steps_are_not_rechecked_but_hashes_are_verified(self):
+        step = self.step('001', "    (home / '001').touch()")
+        step.write_text(step.read_text().replace("return (home / '001').exists()", "raise AssertionError('registered check must not run')"))
+        digest = next(runner.steps(self.repo))[1]
+        state = self.home / '.local/state/dotfiles/updates.json'
+        state.parent.mkdir(parents=True)
+        state.write_text(json.dumps({'version': 1, 'completed': {'001': {'sha256': digest}}}))
+        for mode in ('status', 'check'):
+            self.assertEqual(self.run_updates(mode), '检查完成，无待办或冲突。\n')
+            self.assertIn('已登记（未复查）', self.run_updates(mode, verbose=True))
+        step.write_text(step.read_text() + '# changed\n')
+        for mode in ('status', 'check'):
+            with self.assertRaisesRegex(ValueError, '已应用的更新被修改'):
+                self.run_updates(mode)
+
+    def test_skill_conflicts_are_named_even_when_step_only_returns_false(self):
+        (self.repo / 'Skillfile.json').write_text(json.dumps({
+            'version': 1, 'repository': 'inspirepan/agent-skills', 'enabled': ['commit'],
+        }))
+        target = self.skill('.agents/skills/commit')
+        self.step('001', "    raise AssertionError('apply must not run')")
+        (self.repo / 'updates/components.json').write_text(json.dumps({'001': 'agents'}))
+        before = sorted(self.root.rglob('*'))
+        with patch.object(runner.subprocess, 'run') as run:
+            for mode in ('status', 'check'):
+                output = self.run_updates(mode, ['agents'])
+                self.assertIn('技能冲突：commit', output)
+                self.assertIn('~/.agents/skills/commit', output)
+                self.assertIn('Claude', output)
+                self.assertIn('待执行：001', output)
+            run.assert_not_called()
+        self.assertEqual(sorted(self.root.rglob('*')), before)
+        self.assertEqual((target / 'SKILL.md').read_text(), 'personal')
+
+    def test_skill_pending_and_independent_claude_conflict(self):
+        self.config()
+        output = self.run_updates('check')
+        self.assertIn('技能待同步：demo', output)
+        self.assertIn('scripts/setup-skills.sh --update', output)
+        self.install_record()
+        self.skill('.agents/skills/demo')
+        client = self.skill('.claude/skills/demo')
+        self.assertIn('技能冲突：demo', self.run_updates('status'))
+        self.assertEqual((client / 'SKILL.md').read_text(), 'personal')
+
+    @unittest.skipUnless(shutil.which('stow'), 'GNU Stow is required')
+    def test_stow_simulation_links_conflicts_and_source_symlink(self):
+        source = self.shared_source()
+        target = self.home / '.codex/AGENTS.md'
+        target.parent.mkdir()
+        claude = self.home / '.claude/CLAUDE.md'
+        claude.parent.mkdir()
+        claude.symlink_to(os.path.relpath(source, claude.parent))
+        for kind in ('missing', 'file', 'wrong', 'source-link'):
+            with self.subTest(kind=kind):
+                if os.path.lexists(target):
+                    target.unlink()
+                if kind == 'file':
+                    target.write_text('personal')
+                elif kind == 'wrong':
+                    target.symlink_to(self.home / 'missing')
+                elif kind == 'source-link':
+                    target.symlink_to(os.path.relpath(self.repo / 'codex/.codex/AGENTS.md', target.parent))
+                before = sorted(self.root.rglob('*'))
+                output = self.run_updates('check')
+                if kind == 'source-link':
+                    self.assertEqual(output, '检查完成，无待办或冲突。\n')
+                    self.assertIn('Stow 只读预演通过', self.run_updates('status', verbose=True))
+                else:
+                    self.assertIn('.codex/AGENTS.md', output)
+                    self.assertIn('LINK:' if kind == 'missing' else 'would cause conflicts:', output)
+                    self.assertIn('备份', output)
+                self.assertEqual(sorted(self.root.rglob('*')), before)
+
+    @unittest.skipUnless(shutil.which('stow'), 'GNU Stow is required')
+    def test_stow_respects_ignores_and_existing_folded_parent(self):
+        source = self.repo / 'ssh/.ssh'
+        source.mkdir(parents=True)
+        (source / 'config').write_text('ssh config')
+        (self.home / '.ssh').symlink_to(os.path.relpath(source, self.home))
+        package = self.repo / 'ssh'
+        for name in ('README.md', '.gitignore', 'file~'):
+            (package / name).write_text('ignored by Stow defaults')
+        before = sorted(self.root.rglob('*'))
+        self.assertEqual(self.run_updates('check'), '检查完成，无待办或冲突。\n')
+        self.assertEqual(sorted(self.root.rglob('*')), before)
+        (self.home / '.stow-global-ignore').write_text('^global-only$\nREADME\\.md$\n\\.gitignore$\nfile~$\n')
+        (package / 'global-only').write_text('global ignore')
+        before = sorted(self.root.rglob('*'))
+        self.assertEqual(self.run_updates('check'), '检查完成，无待办或冲突。\n')
+        self.assertEqual(sorted(self.root.rglob('*')), before)
+        (package / '.stow-local-ignore').write_text('^local-only$\nREADME\\.md$\n\\.gitignore$\nfile~$\nglobal-only$\n')
+        (package / 'local-only').write_text('local ignore')
+        before = sorted(self.root.rglob('*'))
+        self.assertEqual(self.run_updates('status'), '检查完成，无待办或冲突。\n')
+        self.assertTrue((self.home / '.ssh').is_symlink())
+        self.assertEqual((source / 'config').read_text(), 'ssh config')
+        self.assertEqual(sorted(self.root.rglob('*')), before)
+
+    def test_stow_missing_or_failed_is_reported(self):
+        (self.repo / 'ssh').mkdir()
+        with patch.object(runner.subprocess, 'run', side_effect=FileNotFoundError):
+            with self.assertRaisesRegex(RuntimeError, '未找到 stow'):
+                self.run_updates('check')
+        result = type('Result', (), {'returncode': 2, 'stdout': '', 'stderr': 'invalid option'})()
+        with patch.object(runner.subprocess, 'run', return_value=result) as run:
+            with self.assertRaisesRegex(RuntimeError, 'Stow 预演失败.*invalid option'):
+                self.run_updates('status')
+            self.assertEqual(run.call_args.args[0][1:4], ['--simulate', '--verbose=1', '--no-folding'])
+
+    def test_component_check_skips_unrelated_skills_and_stow(self):
+        self.shared_source()
+        self.config()
+        self.skill('.agents/skills/demo')
+        self.step('001', "    raise AssertionError('apply must not run')")
+        (self.repo / 'updates/components.json').write_text(json.dumps({'001': 'herdr'}))
+        output = self.run_updates('check', ['herdr'])
+        self.assertNotIn('技能', output)
+        self.assertNotIn('Stow', output)
+        self.assertIn('update --component herdr', output)
+        self.assertIn('跳过 Stow', self.run_updates('check', ['herdr'], verbose=True))
 
     def test_component_isolation_multiple_selection_and_shared_progress(self):
         blocked = self.step('001', "    raise RuntimeError('unrelated conflict')")
@@ -109,8 +260,9 @@ class UpdateTests(unittest.TestCase):
         self.assertFalse((self.home / '002').exists())
         self.assertTrue((self.home / '003').exists())
         other.write_text(other.read_text() + '# changed\n')
-        with self.assertRaisesRegex(ValueError, '已应用的更新被修改'):
-            self.run_updates(components=['herdr'])
+        for mode in ('update', 'status', 'check'):
+            with self.subTest(mode=mode), self.assertRaisesRegex(ValueError, '已应用的更新被修改'):
+                self.run_updates(mode, components=['herdr'])
 
     def test_invalid_component_selection_is_rejected(self):
         self.step('001', "    (home / '001').touch()")
@@ -137,8 +289,11 @@ class UpdateTests(unittest.TestCase):
     def test_cli_component_selection_and_rejected_arguments(self):
         with patch.object(runner.sys, 'argv', ['dotfiles', 'status', '--component', 'herdr', '--component', 'agents']), patch.object(runner, 'execute') as execute:
             runner.main()
-        execute.assert_called_once_with(ROOT, Path.home(), 'status', ['herdr', 'agents'])
-        for arguments in (['init', '--component', 'herdr'], ['update', '--component', 'missing']):
+        execute.assert_called_once_with(ROOT, Path.home(), 'status', ['herdr', 'agents'], verbose=False)
+        with patch.object(runner.sys, 'argv', ['dotfiles', 'check', '--verbose']), patch.object(runner, 'execute') as execute:
+            runner.main()
+        execute.assert_called_once_with(ROOT, Path.home(), 'check', [], verbose=True)
+        for arguments in (['init', '--component', 'herdr'], ['update', '--component', 'missing'], ['init', '--verbose'], ['update', '--verbose']):
             with self.subTest(arguments=arguments), patch.object(runner.sys, 'argv', ['dotfiles', *arguments]), patch.object(runner, 'execute') as execute, contextlib.redirect_stderr(io.StringIO()):
                 with self.assertRaises(SystemExit) as stopped:
                     runner.main()

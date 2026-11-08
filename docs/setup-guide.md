@@ -1,9 +1,15 @@
 # 新设备初始化与已有设备更新
 
 - 新设备：按本指南安装前置工具；安装好 uv、Node.js（含 npx）、GNU Stow 后，Phase 3 执行 `scripts/dotfiles.sh init`，创建 Stow 链接并验证当前更新；继续其余手动配置。
-- 已有设备：先拉取 dotfiles，再执行 `scripts/dotfiles.sh status`、`scripts/dotfiles.sh update`。
+- 已有设备：先拉取 dotfiles，再执行 `scripts/dotfiles.sh check`（或 `status`），按建议处理冲突后执行 `scripts/dotfiles.sh update`。
+- `status` 与 `check` 是同一只读检查：默认只显示待办、冲突和建议，无待办时只输出一行；加 `--verbose` 查看完整结果。`--verbose` 仅支持这两个命令。
+- 日常检查只调用未登记步骤的 `check`；已登记且正文哈希未变的步骤显示“已登记（未复查）”，不反复检查字体等偏好。所有已登记步骤仍校验正文哈希，`update/init` 继续按原流程检查和应用配置。
+- 全量检查独立检查技能本地来源、入口和旧 SHA ref，并对现有 Stow 包运行 `stow --simulate --verbose=1 --no-folding`；遵守 Stow 默认、全局和包内忽略规则，识别已有目录折叠链接。技能检查不联网确认最新版；Stow 预演列出待建链接或冲突，缺少 GNU Stow 会报错。
+- 普通文件或错误链接先比较、合并并备份，目录链接先确认归属；检查命令不会覆盖内容、安装技能或创建本机状态。
 - 单独检查或更新：`scripts/dotfiles.sh status --component herdr`、`scripts/dotfiles.sh update --component herdr`；可选 `agents`（共享指令与技能）、`karabiner`、`codexbar`、`herdr`，可重复指定 `--component`。
 - 不指定组件仍全量运行；`init` 不支持组件筛选。各组件共用本机记录 `~/.local/state/dotfiles/updates.json`，不入库。
+- 组件检查仅检查所选组件的未登记步骤，选中 `agents` 时也检查技能；组件模式跳过 Stow 只读预演，检查全部链接请运行不带 `--component` 的 `status/check`。
+- `status/check` 保留原退出语义：发现待办或冲突仍可返回 0；读取、验证或执行检查失败时非零退出，需同时查看输出。
 - 更新按 `updates/` 文件顺序运行；每台机器独立保存验证记录；失败停在当前步骤，解决后原命令重试。
 - Claude / Codex 共用 MD 已列为首个步骤；遇到有不同内容的本机 MD 会停止，合并后重试，不覆盖。
 - 新增配置变化时同时新增更新步骤，格式见 `updates/README.md`。
