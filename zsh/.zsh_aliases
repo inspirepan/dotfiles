@@ -72,40 +72,20 @@ fb() {
   esac
 }
 
-# gclone: shallow clone GitHub repo to ~/code/GITHUB/org-repo
-# Use `git fetch --unshallow` inside the repo to get full history.
-gclone() {
-  local url="$1"
-  local cwd="$PWD"
+# gc1: shallow clone into ./org-repo and cd in; run `git fetch --unshallow` for full history
+gc1() {
+  local url="$1" url_path org repo dir
 
   if [[ -z "$url" ]]; then
-    echo "Usage: gclone <git-url>"
+    echo "Usage: gc1 <git-url>"
     return 1
   fi
 
-  if [[ "$url" =~ github\.com[:/]+([^/]+)/([^/.]+)(\.git)?$ ]]; then
-    local org="${match[1]}"
-    local repo="${match[2]}"
-    local dir="${org}-${repo}"
+  url_path="${url%/}"
+  repo="${url_path##*/}"
+  org="${url_path%/*}"
+  org="${org##*[:/]}"
+  dir="${org}-${repo%.git}"
 
-    mkdir -p "$HOME/code/GITHUB" || return 1
-
-    if git -C "$HOME/code/GITHUB" clone --depth=1 "$url" "$dir"; then
-      cd "$HOME/code/GITHUB/$dir" || cd "$cwd"
-    else
-      cd "$cwd"
-      return 1
-    fi
-  else
-    if git clone --depth=1 "$url"; then
-      local repo_name
-      repo_name="${url##*/}"
-      repo_name="${repo_name%.git}"
-      if [[ -d "$repo_name" ]]; then
-        cd "$repo_name" || cd "$cwd"
-      fi
-    else
-      return 1
-    fi
-  fi
+  git clone --depth=1 "$url" "$dir" && cd "$dir"
 }
